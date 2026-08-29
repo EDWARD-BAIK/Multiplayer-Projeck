@@ -130,7 +130,7 @@
   .ring::before{content:''; position:absolute; inset:-6px; border-radius:50%; border:2px solid rgba(255,62,200,.25); animation:ringPulse 1.6s ease-out infinite;}
   @keyframes ringPulse{0%{transform:scale(.9); opacity:1;}100%{transform:scale(1.5); opacity:0;}}
 
-  /* promotion picker */
+
   .promo-grid{display:flex; gap:10px; justify-content:center; margin-top:6px;}
   .promo-opt{width:56px; height:56px; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid var(--glass-border);
     display:flex; align-items:center; justify-content:center; font-size:30px; cursor:pointer; transition:.15s;}
@@ -242,7 +242,7 @@
 
   </div>
 
-  <!-- GAME SCREEN -->
+ 
   <div id="gameScreen" hidden style="width:100%;">
     <div class="glass game-header">
       <div class="player-tag">
@@ -277,7 +277,7 @@
   <div class="footer-note">Koneksi langsung antar perangkat via WebRTC (PeerJS)</div>
 </div>
 
-<!-- Incoming invite modal -->
+
 <div class="modal-overlay" id="inviteModal">
   <div class="glass modal-card">
     <div class="ring">
@@ -293,7 +293,7 @@
   </div>
 </div>
 
-<!-- Promotion picker modal -->
+
 <div class="modal-overlay" id="promoModal">
   <div class="glass modal-card">
     <div class="modal-eyebrow">Promosi Pion</div>
@@ -354,9 +354,7 @@
 
   boot();
 
-  // =========================================================
-  // CHESS ENGINE
-  // =========================================================
+  
   var Chess = (function(){
     var ROOK_DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
     var BISHOP_DIRS = [[-1,-1],[-1,1],[1,-1],[1,1]];
@@ -399,7 +397,7 @@
       };
     }
 
-    // Squares a piece attacks (used for check detection) - no castling, pawns diagonal only
+    
     function attackSquares(state, from){
       var board = state.board;
       var piece = board[from];
@@ -628,9 +626,7 @@
     };
   })();
 
-  // =========================================================
-  // APP (network + UI)
-  // =========================================================
+  
   function startApp(){
 
   var peer = null;
@@ -644,7 +640,7 @@
   var selLegal = [];
   var gameOver = false;
   var lastMove = null;
-  var pendingPromo = null; // {from,to}
+  var pendingPromo = null;
   var capturedByMe = [];
   var capturedByOpp = [];
 
@@ -702,7 +698,7 @@
     lobbyStatusDot.className = 'status-dot' + (kind ? (' ' + kind) : '');
   }
 
-  // ---------- Peer init ----------
+  
   var openTimeoutHandle = null;
   var idRetries = 0;
 
@@ -784,7 +780,7 @@
     });
   }
 
-  // ---------- Invite flow (outgoing) ----------
+  
   inviteBtn.addEventListener('click', sendInvite);
   opponentInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') sendInvite(); });
   opponentInput.addEventListener('input', function(){
@@ -867,7 +863,7 @@
     }
   });
 
-  // ---------- Board rendering ----------
+  
   var cellEls = [];
   function buildBoardDom(){
     boardEl.innerHTML = '';
@@ -1127,7 +1123,7 @@
   }
 
   initPeer();
-  } // startApp
+  } 
 })();
 </script>
 </body>
