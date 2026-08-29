@@ -8,16 +8,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-deep:#050414;
-    --cyan:#2af7dd;
-    --magenta:#ff3ec8;
-    --purple:#9b5cff;
-    --glass-fill:rgba(255,255,255,0.055);
-    --glass-border:rgba(255,255,255,0.16);
-    --text-primary:#eef1ff;
-    --text-dim:#8d94bf;
-    --danger:#ff4d6d;
-    --ok:#2af7a1;
+    
+    --bg-deep:#020205;
+    --cyan:#1abfae;
+    --magenta:#d42c9f;
+    --purple:#7b38d6;
+    --glass-fill:rgba(255,255,255,0.025);
+    --glass-border:rgba(255,255,255,0.08);
+    --text-primary:#c8cee6;
+    --text-dim:#68709e;
+    --danger:#d93855;
+    --ok:#1abf85;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
@@ -27,175 +28,162 @@
     overflow-x:hidden; position:relative; display:flex; flex-direction:column; align-items:center;
   }
 
-  .bg-blobs{position:fixed; inset:0; z-index:0; overflow:hidden; background:
-      radial-gradient(circle at 20% 15%, #0d0a2e 0%, transparent 45%),
-      radial-gradient(circle at 80% 85%, #150a2a 0%, transparent 45%),
-      var(--bg-deep);}
-  .blob{position:absolute; border-radius:50%; filter:blur(70px); opacity:.5; mix-blend-mode:screen;}
+ 
+  .bg-blobs{position:fixed; inset:0; z-index:0; overflow:hidden; background:var(--bg-deep);}
+  .blob{position:absolute; border-radius:50%; filter:blur(90px); opacity:.18; mix-blend-mode:screen;}
   .blob1{width:420px; height:420px; background:var(--cyan); top:-120px; left:-100px; animation:float1 16s ease-in-out infinite;}
   .blob2{width:380px; height:380px; background:var(--magenta); bottom:-140px; right:-100px; animation:float2 19s ease-in-out infinite;}
   .blob3{width:300px; height:300px; background:var(--purple); top:40%; left:60%; animation:float3 22s ease-in-out infinite;}
-  @keyframes float1{0%,100%{transform:translate(0,0);}50%{transform:translate(60px,80px);}}
-  @keyframes float2{0%,100%{transform:translate(0,0);}50%{transform:translate(-70px,-50px);}}
-  @keyframes float3{0%,100%{transform:translate(-50%,-50%) translate(0,0);}50%{transform:translate(-50%,-50%) translate(-60px,50px);}}
-  .grain{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.03;
+  @keyframes float1{0%,100%{transform:translate(0,0);}50%{transform:translate(40px,50px);}}
+  @keyframes float2{0%,100%{transform:translate(0,0);}50%{transform:translate(-50px,-40px);}}
+  @keyframes float3{0%,100%{transform:translate(-50%,-50%) translate(0,0);}50%{transform:translate(-50%,-50%) translate(-40px,40px);}}
+  .grain{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.02;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 
   .app{position:relative; z-index:2; width:100%; max-width:460px; padding:26px 16px 60px; display:flex; flex-direction:column; align-items:center;}
 
   .logo{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
-  .logo-mark{width:28px; height:28px; border:2px solid var(--cyan); position:relative; box-shadow:0 0 14px var(--cyan), inset 0 0 8px var(--cyan); border-radius:4px;}
-  .logo-mark::after{content:'♞'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--magenta); text-shadow:0 0 8px var(--magenta);}
-  .logo-text{font-family:'Orbitron',sans-serif; font-weight:900; font-size:19px; letter-spacing:3px;
-    background:linear-gradient(90deg,var(--cyan),var(--purple) 55%,var(--magenta));
-    -webkit-background-clip:text; background-clip:text; color:transparent;}
-  .tagline{font-size:12px; letter-spacing:3px; color:var(--text-dim); text-transform:uppercase; margin-bottom:28px;}
+  .logo-mark{width:26px; height:26px; border:2px solid var(--cyan); position:relative; box-shadow:0 0 8px rgba(26,191,174,0.4); border-radius:4px;}
+  .logo-mark::after{content:'♞'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:15px; color:var(--magenta); text-shadow:0 0 6px rgba(212,44,159,0.4);}
+  .logo-text{font-family:'Orbitron',sans-serif; font-weight:900; font-size:18px; letter-spacing:3px; color:#d6defa;}
+  .tagline{font-size:11.5px; letter-spacing:3px; color:var(--text-dim); text-transform:uppercase; margin-bottom:28px;}
 
   .glass{
     width:100%; background:var(--glass-fill); border:1px solid var(--glass-border); border-radius:20px;
-    backdrop-filter:blur(22px) saturate(140%); -webkit-backdrop-filter:blur(22px) saturate(140%);
-    box-shadow:0 8px 32px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
+    box-shadow:0 8px 32px rgba(0,0,0,.5);
     position:relative; overflow:hidden;
   }
-  .glass::before{content:''; position:absolute; top:0; left:0; right:0; height:1px;
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent);}
 
   .panel{padding:22px; margin-bottom:16px;}
   .panel-label{font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:2.5px; color:var(--text-dim); text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:8px;}
-  .panel-label .dot{width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan);}
+  .panel-label .dot{width:5px; height:5px; border-radius:50%; background:var(--cyan); box-shadow:0 0 6px var(--cyan);}
 
   .id-chip{
     display:flex; align-items:center; justify-content:space-between; gap:12px;
-    background:linear-gradient(120deg, rgba(42,247,221,.10), rgba(155,92,255,.10));
-    border:1px solid rgba(255,255,255,.18); border-radius:14px; padding:16px 18px; position:relative; overflow:hidden; min-height:58px;
+    background:rgba(0,0,0,.35);
+    border:1px solid var(--glass-border); border-radius:14px; padding:16px 18px; position:relative; overflow:hidden; min-height:58px;
   }
-  .id-chip::after{content:''; position:absolute; top:0; left:-40%; width:35%; height:100%;
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent); animation:scan 3.2s linear infinite;}
-  @keyframes scan{0%{left:-40%;}100%{left:110%;}}
-  .id-value{font-family:'Orbitron',sans-serif; font-size:22px; font-weight:700; letter-spacing:4px; color:#fff;
-    text-shadow:0 0 12px var(--cyan), 0 0 26px rgba(42,247,221,.5);}
+  .id-value{font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700; letter-spacing:3px; color:#e2e8ff;
+    text-shadow:0 0 8px rgba(26,191,174,0.3);}
   .id-value.loading{font-size:13px; letter-spacing:1px; color:var(--text-dim); text-shadow:none;}
   .id-value.error{font-size:12.5px; letter-spacing:.5px; color:var(--danger); text-shadow:none; line-height:1.4;}
   .copy-btn{
     flex-shrink:0; width:38px; height:38px; border-radius:10px; border:1px solid var(--glass-border);
-    background:rgba(255,255,255,.06); color:var(--text-primary); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.2s;
+    background:rgba(255,255,255,.03); color:var(--text-primary); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.2s;
   }
-  .copy-btn:hover{background:rgba(255,255,255,.14); box-shadow:0 0 12px rgba(255,255,255,.2);}
+  .copy-btn:hover{background:rgba(255,255,255,.08);}
   .copy-btn svg{width:16px; height:16px;}
-  .hint{font-size:12.5px; color:var(--text-dim); margin-top:10px; line-height:1.5;}
+  .hint{font-size:12px; color:var(--text-dim); margin-top:10px; line-height:1.5;}
   .retry-btn{display:none; margin-top:12px;}
   .retry-btn.show{display:inline-flex;}
 
   .input-row{display:flex; gap:10px;}
   input[type=text]{
-    flex:1; min-width:0; background:rgba(0,0,0,.28); border:1px solid var(--glass-border); border-radius:12px;
-    padding:14px 16px; color:var(--text-primary); font-family:'Orbitron',sans-serif; font-size:16px; letter-spacing:3px;
+    flex:1; min-width:0; background:rgba(0,0,0,.45); border:1px solid var(--glass-border); border-radius:12px;
+    padding:14px 16px; color:var(--text-primary); font-family:'Orbitron',sans-serif; font-size:15px; letter-spacing:3px;
     outline:none; transition:.2s; text-transform:uppercase;
   }
-  input[type=text]::placeholder{color:#565c85; letter-spacing:2px; font-size:13px;}
-  input[type=text]:focus{border-color:var(--cyan); box-shadow:0 0 0 3px rgba(42,247,221,.15), 0 0 16px rgba(42,247,221,.25);}
+  input[type=text]::placeholder{color:#42496b; letter-spacing:2px; font-size:12px;}
+  input[type=text]:focus{border-color:var(--cyan); box-shadow:0 0 0 2px rgba(26,191,174,0.15);}
 
   .btn{
-    font-family:'Orbitron',sans-serif; letter-spacing:2px; font-size:13px; font-weight:700; text-transform:uppercase;
-    border:none; border-radius:12px; padding:14px 20px; cursor:pointer; color:#04030c;
-    background:linear-gradient(120deg,var(--cyan),var(--purple)); box-shadow:0 4px 20px rgba(42,247,221,.28);
-    transition:transform .15s, box-shadow .15s, opacity .15s; white-space:nowrap;
+    font-family:'Orbitron',sans-serif; letter-spacing:2px; font-size:12.5px; font-weight:700; text-transform:uppercase;
+    border:none; border-radius:12px; padding:14px 20px; cursor:pointer; color:#0b0c14;
+    background:linear-gradient(120deg,var(--cyan),var(--purple)); box-shadow:0 4px 16px rgba(26,191,174,0.2);
+    transition:transform .15s, opacity .15s; white-space:nowrap;
     display:inline-flex; align-items:center; justify-content:center; gap:6px;
   }
-  .btn:hover{transform:translateY(-1px); box-shadow:0 6px 26px rgba(42,247,221,.42);}
+  .btn:hover{transform:translateY(-1px); opacity:.9;}
   .btn:active{transform:translateY(0);}
-  .btn:disabled{opacity:.4; cursor:not-allowed; transform:none; box-shadow:none;}
+  .btn:disabled{opacity:.3; cursor:not-allowed; transform:none; box-shadow:none;}
   .btn.outline{background:transparent; color:var(--text-primary); border:1px solid var(--glass-border); box-shadow:none;}
-  .btn.outline:hover{border-color:var(--cyan); box-shadow:0 0 14px rgba(42,247,221,.2); background:rgba(255,255,255,.05);}
+  .btn.outline:hover{border-color:var(--cyan); background:rgba(255,255,255,.03);}
   .btn.full{width:100%;}
   .btn-row{display:flex; gap:10px; margin-top:14px;}
 
-  .status-line{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-dim); margin-top:14px; min-height:18px;}
-  .status-dot{width:7px; height:7px; border-radius:50%; background:var(--text-dim); flex-shrink:0; transition:.2s;}
-  .status-dot.pulse{background:#ffcf4d; box-shadow:0 0 8px #ffcf4d; animation:pulse 1.1s ease-in-out infinite;}
-  .status-dot.ok{background:var(--ok); box-shadow:0 0 8px var(--ok);}
-  .status-dot.err{background:var(--danger); box-shadow:0 0 8px var(--danger);}
+  .status-line{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text-dim); margin-top:14px; min-height:18px;}
+  .status-dot{width:6px; height:6px; border-radius:50%; background:var(--text-dim); flex-shrink:0; transition:.2s;}
+  .status-dot.pulse{background:#ccaa3d; box-shadow:0 0 6px #ccaa3d; animation:pulse 1.1s ease-in-out infinite;}
+  .status-dot.ok{background:var(--ok); box-shadow:0 0 6px var(--ok);}
+  .status-dot.err{background:var(--danger); box-shadow:0 0 6px var(--danger);}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 
-  .modal-overlay{position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; background:rgba(3,2,12,.6); backdrop-filter:blur(6px); padding:20px;}
+  .modal-overlay{position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; background:rgba(2,2,6,.75); backdrop-filter:blur(5px); padding:20px;}
   .modal-overlay.show{display:flex;}
   .modal-card{width:100%; max-width:360px; text-align:center; padding:30px 26px;
-    border:1px solid rgba(255,62,200,.4); box-shadow:0 0 0 1px rgba(255,62,200,.15), 0 20px 60px rgba(0,0,0,.5), 0 0 40px rgba(255,62,200,.18);
-    animation:modalIn .35s cubic-bezier(.2,.9,.3,1.3);}
-  @keyframes modalIn{from{opacity:0; transform:scale(.85) translateY(10px);}to{opacity:1; transform:scale(1) translateY(0);}}
-  .modal-eyebrow{font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:3px; color:var(--magenta); text-transform:uppercase; margin-bottom:10px; text-shadow:0 0 10px rgba(255,62,200,.6);}
-  .modal-id{font-family:'Orbitron',sans-serif; font-size:24px; font-weight:700; letter-spacing:3px; margin:6px 0 4px; color:#fff; text-shadow:0 0 14px var(--magenta);}
+    border:1px solid rgba(212,44,159,0.3); box-shadow:0 20px 50px rgba(0,0,0,.6);
+    animation:modalIn .3s cubic-bezier(.2,.9,.3,1.2);}
+  @keyframes modalIn{from{opacity:0; transform:scale(.9) translateY(8px);}to{opacity:1; transform:scale(1) translateY(0);}}
+  .modal-eyebrow{font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:3px; color:var(--magenta); text-transform:uppercase; margin-bottom:10px;}
+  .modal-id{font-family:'Orbitron',sans-serif; font-size:22px; font-weight:700; letter-spacing:3px; margin:6px 0 4px; color:#fff;}
   .modal-sub{font-size:13px; color:var(--text-dim); margin-bottom:22px;}
-  .ring{width:60px; height:60px; margin:0 auto 14px; border-radius:50%; border:2px solid rgba(255,62,200,.5); display:flex; align-items:center; justify-content:center; position:relative;}
-  .ring::before{content:''; position:absolute; inset:-6px; border-radius:50%; border:2px solid rgba(255,62,200,.25); animation:ringPulse 1.6s ease-out infinite;}
-  @keyframes ringPulse{0%{transform:scale(.9); opacity:1;}100%{transform:scale(1.5); opacity:0;}}
+  .ring{width:56px; height:56px; margin:0 auto 14px; border-radius:50%; border:2px solid rgba(212,44,159,0.4); display:flex; align-items:center; justify-content:center; position:relative;}
 
   .promo-grid{display:flex; gap:10px; justify-content:center; margin-top:6px;}
-  .promo-opt{width:56px; height:56px; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid var(--glass-border);
-    display:flex; align-items:center; justify-content:center; font-size:30px; cursor:pointer; transition:.15s;}
-  .promo-opt:hover{border-color:var(--cyan); box-shadow:0 0 14px rgba(42,247,221,.3); transform:translateY(-2px);}
+  .promo-opt{width:54px; height:54px; border-radius:12px; background:rgba(255,255,255,.03); border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center; font-size:28px; cursor:pointer; transition:.15s;}
+  .promo-opt:hover{border-color:var(--cyan); background:rgba(255,255,255,.06);}
 
-  .game-header{width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 18px; margin-bottom:14px; gap:8px;}
-  .player-tag{display:flex; flex-direction:column; gap:5px; min-width:0;}
+  .game-header{width:100%; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; margin-bottom:14px; gap:8px;}
+  .player-tag{display:flex; flex-direction:column; gap:4px; min-width:0;}
   .player-tag.right{align-items:flex-end;}
-  .player-tag .who{font-size:10px; letter-spacing:2px; color:var(--text-dim); text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px;}
-  .player-tag .mark{font-family:'Orbitron',sans-serif; font-size:16px; font-weight:900; display:flex; align-items:center; gap:6px;}
-  .mark-w{color:var(--cyan); text-shadow:0 0 10px var(--cyan);}
-  .mark-b{color:var(--magenta); text-shadow:0 0 10px var(--magenta);}
-  .captured{display:flex; flex-wrap:wrap; gap:1px; min-height:16px; font-size:13px; max-width:130px;}
+  .player-tag .who{font-size:10px; letter-spacing:2px; color:var(--text-dim); text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:110px;}
+  .player-tag .mark{font-family:'Orbitron',sans-serif; font-size:15px; font-weight:900; display:flex; align-items:center; gap:6px;}
+  .mark-w{color:var(--cyan); text-shadow:0 0 6px rgba(26,191,174,0.3);}
+  .mark-b{color:var(--magenta); text-shadow:0 0 6px rgba(212,44,159,0.3);}
+  .captured{display:flex; flex-wrap:wrap; gap:1px; min-height:16px; font-size:12px; max-width:120px;}
   .captured.right{justify-content:flex-end;}
   .vs-mid{font-family:'Orbitron',sans-serif; font-size:10px; color:var(--text-dim); letter-spacing:2px; flex-shrink:0;}
 
-  .turn-banner{text-align:center; font-family:'Orbitron',sans-serif; font-size:12.5px; letter-spacing:1.5px; text-transform:uppercase;
-    padding:11px; margin-bottom:16px; border-radius:12px; width:100%; background:rgba(255,255,255,.05); border:1px solid var(--glass-border);
+  .turn-banner{text-align:center; font-family:'Orbitron',sans-serif; font-size:12px; letter-spacing:1.5px; text-transform:uppercase;
+    padding:10px; margin-bottom:16px; border-radius:12px; width:100%; background:rgba(255,255,255,.03); border:1px solid var(--glass-border);
     color:var(--text-primary); transition:.25s;}
-  .turn-banner.my-turn{border-color:rgba(42,247,221,.5); box-shadow:0 0 20px rgba(42,247,221,.15); color:var(--cyan);}
-  .turn-banner.their-turn{border-color:rgba(255,62,200,.4); color:var(--magenta);}
-  .turn-banner.in-check{border-color:var(--danger); color:var(--danger); box-shadow:0 0 20px rgba(255,77,109,.25);}
+  .turn-banner.my-turn{border-color:rgba(26,191,174,0.4); color:var(--cyan);}
+  .turn-banner.their-turn{border-color:rgba(212,44,159,0.35); color:var(--magenta);}
+  .turn-banner.in-check{border-color:var(--danger); color:var(--danger);}
 
   .board-wrap{position:relative; width:min(90vw, 340px); height:min(90vw, 340px); margin:0 auto 20px; padding:6px;
-    background:rgba(0,0,0,.25); border:1px solid var(--glass-border); border-radius:16px; box-shadow:inset 0 0 24px rgba(0,0,0,.4);}
-  .board{display:grid; grid-template-columns:repeat(8,1fr); grid-template-rows:repeat(8,1fr); gap:2px; width:100%; height:100%; transition:transform .3s;}
+    background:rgba(0,0,0,.4); border:1px solid var(--glass-border); border-radius:16px;}
+  .board{display:grid; grid-template-columns:repeat(8,1fr); grid-template-rows:repeat(8,1fr); gap:1.5px; width:100%; height:100%; transition:transform .3s;}
   .board.flipped{transform:rotate(180deg);}
   .board.flipped .cell{transform:rotate(180deg);}
+  
+  /* WARNA PAPAN CATUR DIREDUPKAN (Muted Dark Theme untuk Mata Nyaman) */
   .cell{
     position:relative; display:flex; align-items:center; justify-content:center; cursor:pointer;
-    font-size:clamp(16px,6.2vw,26px); border-radius:4px; -webkit-user-select:none; user-select:none;
+    font-size:clamp(16px,6.2vw,25px); border-radius:3px; -webkit-user-select:none; user-select:none;
     transition:background .12s;
   }
-  .cell.light{background:#eeece4;}
-  .cell.dark{background:#17161c;}
-  .cell.fillable:hover{filter:brightness(1.3);}
-  .cell.selected{box-shadow:inset 0 0 0 2px var(--cyan), 0 0 12px rgba(42,247,221,.6);}
-  .cell.legal::after{content:''; position:absolute; width:24%; height:24%; border-radius:50%; background:rgba(255,255,255,.5); box-shadow:0 0 8px rgba(255,255,255,.5);}
-  .cell.legal-capture{box-shadow:inset 0 0 0 3px var(--magenta), 0 0 10px rgba(255,62,200,.5);}
+  .cell.light{background:#2e3445;} /* Kotak terang yang lembut dan gelap */
+  .cell.dark{background:#161922;}  /* Kotak gelap pekat */
+  .cell.fillable:hover{filter:brightness(1.2);}
+  .cell.selected{box-shadow:inset 0 0 0 2px var(--cyan); background:rgba(26,191,174,0.18);}
+  .cell.legal::after{content:''; position:absolute; width:22%; height:22%; border-radius:50%; background:rgba(255,255,255,0.35); box-shadow:0 0 6px rgba(255,255,255,0.3);}
+  .cell.legal-capture{box-shadow:inset 0 0 0 2px var(--magenta); background:rgba(212,44,159,0.15);}
   .cell.legal-capture::after{display:none;}
-  .cell.check{box-shadow:inset 0 0 0 3px var(--danger), 0 0 16px var(--danger); animation:checkPulse 1s ease-in-out infinite;}
-  @keyframes checkPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.5);}}
-  .cell.last-from, .cell.last-to{box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);}
+  .cell.check{box-shadow:inset 0 0 0 2px var(--danger); background:rgba(217,56,85,0.25);}
+  .cell.last-from, .cell.last-to{background:rgba(255,255,255,0.06);}
+
+  
   .piece{line-height:1;}
-  .piece.w{color:var(--cyan); text-shadow:0 0 7px var(--cyan), 0 1px 1px rgba(0,0,0,.6);}
-  .piece.b{color:var(--magenta); text-shadow:0 0 7px var(--magenta), 0 1px 1px rgba(0,0,0,.6);}
+  .piece.w{color:#a9f5ed; text-shadow:0 0 4px rgba(26,191,174,0.3);}
+  .piece.b{color:#f5a9e3; text-shadow:0 0 4px rgba(212,44,159,0.3);}
   .piece.pop{animation:pop .2s cubic-bezier(.2,.9,.3,1.3);}
   @keyframes pop{from{transform:scale(.3); opacity:0;}to{transform:scale(1); opacity:1;}}
 
   .result-overlay{position:absolute; inset:6px; z-index:5; display:none; align-items:center; justify-content:center; flex-direction:column;
-    background:rgba(3,2,12,.78); backdrop-filter:blur(6px); border-radius:12px; text-align:center; padding:20px;}
+    background:rgba(2,2,6,.85); backdrop-filter:blur(6px); border-radius:12px; text-align:center; padding:20px;}
   .result-overlay.show{display:flex;}
-  .result-title{font-family:'Orbitron',sans-serif; font-size:20px; font-weight:900; letter-spacing:2px; margin-bottom:6px;}
-  .result-sub{font-size:13px; color:var(--text-dim); margin-bottom:18px;}
+  .result-title{font-family:'Orbitron',sans-serif; font-size:18px; font-weight:900; letter-spacing:2px; margin-bottom:6px;}
+  .result-sub{font-size:12.5px; color:var(--text-dim); margin-bottom:18px;}
 
   .toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); z-index:80;
-    padding:12px 20px; border-radius:12px; font-size:13px; opacity:0; pointer-events:none; transition:.3s;
-    background:rgba(10,8,26,.92); border:1px solid var(--glass-border); box-shadow:0 8px 30px rgba(0,0,0,.4); max-width:88vw; text-align:center;}
+    padding:11px 18px; border-radius:12px; font-size:12.5px; opacity:0; pointer-events:none; transition:.3s;
+    background:rgba(8,8,16,.95); border:1px solid var(--glass-border); box-shadow:0 8px 30px rgba(0,0,0,.5); max-width:88vw; text-align:center;}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
-  .footer-note{margin-top:8px; font-size:11px; color:#565c85; text-align:center; letter-spacing:1px;}
-
-  @media (max-width:380px){
-    .id-value{font-size:17px; letter-spacing:2px;}
-    .btn{padding:13px 14px; font-size:12px;}
-  }
+  .footer-note{margin-top:8px; font-size:11px; color:#42496b; text-align:center; letter-spacing:1px;}
   [hidden]{display:none !important;}
 </style>
 </head>
@@ -230,7 +218,7 @@
     </div>
 
     <div class="glass panel">
-      <div class="panel-label"><span class="dot" style="background:var(--magenta); box-shadow:0 0 8px var(--magenta);"></span>UNDANG LAWAN</div>
+      <div class="panel-label"><span class="dot" style="background:var(--magenta); box-shadow:0 0 6px var(--magenta);"></span>UNDANG LAWAN</div>
       <div class="input-row">
         <input type="text" id="opponentInput" placeholder="MASUKKAN ID LAWAN" maxlength="12" autocomplete="off" autocapitalize="characters">
         <button class="btn" id="inviteBtn">Undang</button>
@@ -240,7 +228,6 @@
 
   </div>
 
- 
   <div id="gameScreen" hidden style="width:100%;">
     <div class="glass game-header">
       <div class="player-tag">
@@ -275,11 +262,10 @@
   <div class="footer-note">Koneksi langsung antar perangkat via WebRTC (PeerJS)</div>
 </div>
 
-
 <div class="modal-overlay" id="inviteModal">
   <div class="glass modal-card">
     <div class="ring">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff3ec8" stroke-width="2"><path d="M13.5 8.5 12 10 8 6l2-2c.4-.4 1-.4 1.4 0l4 4c.4.4.4 1 0 1.4Z"/><path d="M6 8 4 10c-1 3 3 7 6 6l2-2"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d42c9f" stroke-width="2"><path d="M13.5 8.5 12 10 8 6l2-2c.4-.4 1-.4 1.4 0l4 4c.4.4.4 1 0 1.4Z"/><path d="M6 8 4 10c-1 3 3 7 6 6l2-2"/></svg>
     </div>
     <div class="modal-eyebrow">Undangan Masuk</div>
     <div class="modal-id" id="inviteFromId">------</div>
@@ -290,7 +276,6 @@
     </div>
   </div>
 </div>
-
 
 <div class="modal-overlay" id="promoModal">
   <div class="glass modal-card">
@@ -341,7 +326,7 @@
         if(typeof Peer === 'undefined'){
           fatalConnectionError('Library koneksi gagal dimuat. Periksa koneksi internet lalu coba lagi.');
           return;
-       }
+        }
         startApp();
       })
       .catch(function(){
@@ -351,7 +336,6 @@
 
   boot();
 
-  
   var Chess = (function(){
     var ROOK_DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
     var BISHOP_DIRS = [[-1,-1],[-1,1],[1,-1],[1,1]];
@@ -621,528 +605,523 @@
     };
   })();
 
-  
   function startApp(){
 
-  var peer = null;
-  var conn = null;
-  var pendingConn = null;
-  var myId = null;
-  var myRole = null; 
-  var oppLabel = 'LAWAN';
-  var state = null;
-  var selected = null;
-  var selLegal = [];
-  var gameOver = false;
-  var lastMove = null;
-  var pendingPromo = null; 
-  var capturedByMe = [];
-  var capturedByOpp = [];
+    var peer = null;
+    var conn = null;
+    var pendingConn = null;
+    var myId = null;
+    var myRole = null; 
+    var oppLabel = 'LAWAN';
+    var state = null;
+    var selected = null;
+    var selLegal = [];
+    var gameOver = false;
+    var lastMove = null;
+    var pendingPromo = null; 
+    var capturedByMe = [];
+    var capturedByOpp = [];
 
-  var PIECE_GLYPH = {
-    wK:'♔', wQ:'♕', wR:'♖', wB:'♗', wN:'♘', wP:'♙',
-    bK:'♚', bQ:'♛', bR:'♜', bB:'♝', bN:'♞', bP:'♟'
-  };
+    var PIECE_GLYPH = {
+      wK:'♔', wQ:'♕', wR:'♖', wB:'♗', wN:'♘', wP:'♙',
+      bK:'♚', bQ:'♛', bR:'♜', bB:'♝', bN:'♞', bP:'♟'
+    };
 
-  var $ = function(id){ return document.getElementById(id); };
-  var lobbyScreen = $('lobbyScreen');
-  var gameScreen = $('gameScreen');
-  var copyBtn = $('copyBtn');
-  var opponentInput = $('opponentInput');
-  var inviteBtn = $('inviteBtn');
-  var lobbyStatusDot = $('lobbyStatusDot');
-  var lobbyStatusText = $('lobbyStatusText');
-  var inviteModal = $('inviteModal');
-  var inviteFromId = $('inviteFromId');
-  var acceptBtn = $('acceptBtn');
-  var declineBtn = $('declineBtn');
-  var promoModal = $('promoModal');
-  var promoGrid = $('promoGrid');
-  var boardEl = $('board');
-  var turnBanner = $('turnBanner');
-  var myMarkLabel = $('myMarkLabel');
-  var oppMarkLabel = $('oppMarkLabel');
-  var oppIdLabel = $('oppIdLabel');
-  var myCapturedEl = $('myCaptured');
-  var oppCapturedEl = $('oppCaptured');
-  var resultOverlay = $('resultOverlay');
-  var resultTitle = $('resultTitle');
-  var resultSub = $('resultSub');
-  var playAgainBtn = $('playAgainBtn');
-  var leaveBtn = $('leaveBtn');
-  var toastEl = $('toast');
+    var $ = function(id){ return document.getElementById(id); };
+    var lobbyScreen = $('lobbyScreen');
+    var gameScreen = $('gameScreen');
+    var copyBtn = $('copyBtn');
+    var opponentInput = $('opponentInput');
+    var inviteBtn = $('inviteBtn');
+    var lobbyStatusDot = $('lobbyStatusDot');
+    var lobbyStatusText = $('lobbyStatusText');
+    var inviteModal = $('inviteModal');
+    var inviteFromId = $('inviteFromId');
+    var acceptBtn = $('acceptBtn');
+    var declineBtn = $('declineBtn');
+    var promoModal = $('promoModal');
+    var promoGrid = $('promoGrid');
+    var boardEl = $('board');
+    var turnBanner = $('turnBanner');
+    var myMarkLabel = $('myMarkLabel');
+    var oppMarkLabel = $('oppMarkLabel');
+    var oppIdLabel = $('oppIdLabel');
+    var myCapturedEl = $('myCaptured');
+    var oppCapturedEl = $('oppCaptured');
+    var resultOverlay = $('resultOverlay');
+    var resultTitle = $('resultTitle');
+    var resultSub = $('resultSub');
+    var playAgainBtn = $('playAgainBtn');
+    var leaveBtn = $('leaveBtn');
+    var toastEl = $('toast');
 
-  var ID_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  var STORAGE_KEY = 'edward_arena_peer_id';
-  function generateId(len){
-    len = len || 5;
-    var s = '';
-    for(var i=0;i<len;i++) s += ID_CHARS[Math.floor(Math.random()*ID_CHARS.length)];
-    return s;
-  }
-  function getSavedId(){
-    try{
-      var saved = localStorage.getItem(STORAGE_KEY);
-      if(saved && /^[A-Z0-9]{4,12}$/.test(saved)) return saved;
-    }catch(e){}
-    return null;
-  }
-  function saveId(id){
-    try{ localStorage.setItem(STORAGE_KEY, id); }catch(e){}
-  }
-  function getOrCreateId(){
-    var saved = getSavedId();
-    if(saved) return saved;
-    var id = generateId();
-    saveId(id);
-    return id;
-  }
+    var ID_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    var STORAGE_KEY = 'edward_arena_peer_id';
+    function generateId(len){
+      len = len || 5;
+      var s = '';
+      for(var i=0;i<len;i++) s += ID_CHARS[Math.floor(Math.random()*ID_CHARS.length)];
+      return s;
+    }
+    function getSavedId(){
+      try{
+        var saved = localStorage.getItem(STORAGE_KEY);
+        if(saved && /^[A-Z0-9]{4,12}$/.test(saved)) return saved;
+      }catch(e){}
+      return null;
+    }
+    function saveId(id){
+      try{ localStorage.setItem(STORAGE_KEY, id); }catch(e){}
+    }
+    function getOrCreateId(){
+      var saved = getSavedId();
+      if(saved) return saved;
+      var id = generateId();
+      saveId(id);
+      return id;
+    }
 
-  var toastTimer = null;
-  function toast(msg, ms){
-    toastEl.textContent = msg;
-    toastEl.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, ms || 2600);
-  }
+    var toastTimer = null;
+    function toast(msg, ms){
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, ms || 2600);
+    }
 
-  function setLobbyStatus(text, kind){
-    lobbyStatusText.textContent = text;
-    lobbyStatusDot.className = 'status-dot' + (kind ? (' ' + kind) : '');
-  }
+    function setLobbyStatus(text, kind){
+      lobbyStatusText.textContent = text;
+      lobbyStatusDot.className = 'status-dot' + (kind ? (' ' + kind) : '');
+    }
 
-  var openTimeoutHandle = null;
-  var idRetries = 0;
+    var openTimeoutHandle = null;
+    var idRetries = 0;
 
-  function initPeer(forceId){
-    var id = forceId || getOrCreateId();
-    if(peer){ try{ peer.destroy(); }catch(e){} }
+    function initPeer(forceId){
+      var id = forceId || getOrCreateId();
+      if(peer){ try{ peer.destroy(); }catch(e){} }
 
-    myIdValue.textContent = 'Menghubungkan…';
-    myIdValue.classList.remove('error');
-    myIdValue.classList.add('loading');
-    retryBtn.classList.remove('show');
-    setLobbyStatus('Menunggu koneksi…', 'pulse');
+      myIdValue.textContent = 'Menghubungkan…';
+      myIdValue.classList.remove('error');
+      myIdValue.classList.add('loading');
+      retryBtn.classList.remove('show');
+      setLobbyStatus('Menunggu koneksi…', 'pulse');
 
-    
-    peer = new Peer(id, {
-      host: '0.peerjs.com', 
-      port: 443,            
-      secure: true,         
-      debug: 0,
-      config: {
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' },
-          { urls: 'stun:stun.relay.metered.ca:80' }
-        ]
-      }
-    });
+      peer = new Peer(id, {
+        host: '0.peerjs.com', 
+        port: 443,            
+        secure: true,         
+        debug: 0,
+        config: {
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
+            { urls: 'stun:stun3.l.google.com:19302' }
+          ]
+        }
+      });
 
-    clearTimeout(openTimeoutHandle);
-    openTimeoutHandle = setTimeout(function(){
-      fatalConnectionError('Server koneksi tidak merespons. Periksa internet lalu coba lagi.');
-    }, 12000);
-
-    peer.on('open', function(pid){
       clearTimeout(openTimeoutHandle);
-      idRetries = 0;
-      myId = pid;
-      myIdValue.textContent = pid;
-      myIdValue.classList.remove('loading');
-      setLobbyStatus('Siap menerima undangan', '');
-    });
+      openTimeoutHandle = setTimeout(function(){
+        fatalConnectionError('Server koneksi tidak merespons. Periksa internet lalu coba lagi.');
+      }, 12000);
 
-    peer.on('connection', function(c){
-      if(conn || pendingConn){
-        c.on('open', function(){ c.send({type:'reject', reason:'busy'}); c.close(); });
-        return;
-      }
-      pendingConn = c;
-      c.on('open', function(){
-        inviteFromId.textContent = c.peer;
-        inviteModal.classList.add('show');
+      peer.on('open', function(pid){
+        clearTimeout(openTimeoutHandle);
+        idRetries = 0;
+        myId = pid;
+        myIdValue.textContent = pid;
+        myIdValue.classList.remove('loading');
+        setLobbyStatus('Siap menerima undangan', '');
       });
-      c.on('close', function(){
-        if(pendingConn === c){ pendingConn = null; inviteModal.classList.remove('show'); }
-      });
-    });
 
-    peer.on('error', function(err){
-      if(err && err.type === 'unavailable-id'){
-        idRetries++;
-        if(idRetries < 8){
-          var freshId = generateId();
-          saveId(freshId);
-          initPeer(freshId);
+      peer.on('connection', function(c){
+        if(conn || pendingConn){
+          c.on('open', function(){ c.send({type:'reject', reason:'busy'}); c.close(); });
           return;
         }
-        fatalConnectionError('Gagal membuat ID unik. Coba lagi.');
-        return;
-      }
-      if(err && err.type === 'peer-unavailable'){
-        setLobbyStatus('ID lawan tidak ditemukan', 'err');
-        inviteBtn.disabled = false;
-        return;
-      }
-      if(err && (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error' || err.type === 'socket-closed' || err.type === 'browser-incompatible')){
-        clearTimeout(openTimeoutHandle);
-        fatalConnectionError('Tidak dapat terhubung ke server. Periksa koneksi internet.');
-        return;
-      }
-      setLobbyStatus('Gangguan koneksi…', 'err');
-    });
+        pendingConn = c;
+        c.on('open', function(){
+          inviteFromId.textContent = c.peer;
+          inviteModal.classList.add('show');
+        });
+        c.on('close', function(){
+          if(pendingConn === c){ pendingConn = null; inviteModal.classList.remove('show'); }
+        });
+      });
 
-    peer.on('disconnected', function(){
-      if(myId){
-        setLobbyStatus('Koneksi terputus, menyambung ulang…', 'err');
-        try{ peer.reconnect(); }catch(e){}
-      }
-    });
-  }
+      peer.on('error', function(err){
+        if(err && err.type === 'unavailable-id'){
+          idRetries++;
+          if(idRetries < 5){
+            setTimeout(function(){ initPeer(id); }, 2000);
+            return;
+          }
+          fatalConnectionError('Koneksi sedang tersangkut. Coba muat ulang halaman.');
+          return;
+        }
+        if(err && err.type === 'peer-unavailable'){
+          setLobbyStatus('ID lawan tidak ditemukan', 'err');
+          inviteBtn.disabled = false;
+          return;
+        }
+        if(err && (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error' || err.type === 'socket-closed' || err.type === 'browser-incompatible')){
+          clearTimeout(openTimeoutHandle);
+          fatalConnectionError('Tidak dapat terhubung ke server. Periksa koneksi internet.');
+          return;
+        }
+        setLobbyStatus('Gangguan koneksi…', 'err');
+      });
 
-  inviteBtn.addEventListener('click', sendInvite);
-  opponentInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') sendInvite(); });
-  opponentInput.addEventListener('input', function(){
-    opponentInput.value = opponentInput.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
-  });
-
-  function sendInvite(){
-    if(!myId){ toast('Tunggu sampai koneksi siap'); return; }
-    var target = opponentInput.value.trim();
-    if(!target){ toast('Masukkan ID lawan dulu'); return; }
-    if(target === myId){ toast('Tidak bisa mengundang diri sendiri'); return; }
-    if(conn){ toast('Sudah terhubung ke lawan'); return; }
-
-    inviteBtn.disabled = true;
-    setLobbyStatus('Menghubungi ' + target + '…', 'pulse');
-
-    
-    var c = peer.connect(target);
-    var settled = false;
-
-    var timeoutH = setTimeout(function(){
-      if(!settled){
-        settled = true;
-        inviteBtn.disabled = false;
-        setLobbyStatus('Lawan tidak merespons', 'err');
-        try{ c.close(); }catch(e){}
-      }
-    }, 15000);
-
-    c.on('open', function(){ setLobbyStatus('Menunggu ' + target + ' menerima…', 'pulse'); });
-
-    c.on('data', function(data){
-      if(data.type === 'accept' && !settled){
-        settled = true; clearTimeout(timeoutH);
-        myRole = 'w'; oppLabel = target;
-        startGame(c);
-      } else if(data.type === 'reject' && !settled){
-        settled = true; clearTimeout(timeoutH);
-        inviteBtn.disabled = false;
-        setLobbyStatus(data.reason === 'busy' ? (target + ' sedang bermain') : (target + ' menolak undangan'), 'err');
-      }
-    });
-
-    c.on('error', function(){
-      if(!settled){ settled = true; clearTimeout(timeoutH); inviteBtn.disabled = false; setLobbyStatus('Gagal terhubung ke ' + target, 'err'); }
-    });
-
-    c.on('close', function(){
-      if(!settled){ settled = true; clearTimeout(timeoutH); inviteBtn.disabled = false; setLobbyStatus('Koneksi ditutup', 'err'); }
-    });
-  }
-
-  acceptBtn.addEventListener('click', function(){
-    if(!pendingConn) return;
-    var c = pendingConn; pendingConn = null;
-    inviteModal.classList.remove('show');
-    myRole = 'b'; oppLabel = c.peer;
-    c.send({type:'accept'});
-    startGame(c);
-  });
-
-  declineBtn.addEventListener('click', function(){
-    if(!pendingConn) return;
-    pendingConn.send({type:'reject', reason:'declined'});
-    pendingConn.close();
-    pendingConn = null;
-    inviteModal.classList.remove('show');
-  });
-
-  copyBtn.addEventListener('click', function(){
-    if(!myId) return;
-    var done = function(){ toast('ID disalin: ' + myId); };
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(myId).then(done).catch(done);
-    } else {
-      var ta = document.createElement('textarea');
-      ta.value = myId; document.body.appendChild(ta); ta.select();
-      try{ document.execCommand('copy'); }catch(e){}
-      document.body.removeChild(ta);
-      done();
+      peer.on('disconnected', function(){
+        if(myId){
+          setLobbyStatus('Koneksi terputus, menyambung ulang…', 'err');
+          try{ peer.reconnect(); }catch(e){}
+        }
+      });
     }
-  });
 
-  
-  var cellEls = [];
-  function buildBoardDom(){
-    boardEl.innerHTML = '';
-    cellEls = [];
-    for(var i=0;i<64;i++){
-      var r = Math.floor(i/8), c = i%8;
-      var cell = document.createElement('div');
-      cell.className = 'cell ' + (((r+c)%2===0) ? 'light' : 'dark');
-      cell.dataset.index = i;
-      cell.addEventListener('click', onCellClick);
-      boardEl.appendChild(cell);
-      cellEls.push(cell);
+    inviteBtn.addEventListener('click', sendInvite);
+    opponentInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') sendInvite(); });
+    opponentInput.addEventListener('input', function(){
+      opponentInput.value = opponentInput.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+    });
+
+    function sendInvite(){
+      if(!myId){ toast('Tunggu sampai koneksi siap'); return; }
+      var target = opponentInput.value.trim();
+      if(!target){ toast('Masukkan ID lawan dulu'); return; }
+      if(target === myId){ toast('Tidak bisa mengundang diri sendiri'); return; }
+      if(conn){ toast('Sudah terhubung ke lawan'); return; }
+
+      inviteBtn.disabled = true;
+      setLobbyStatus('Menghubungi ' + target + '…', 'pulse');
+
+      var c = peer.connect(target);
+      var settled = false;
+
+      var timeoutH = setTimeout(function(){
+        if(!settled){
+          settled = true;
+          inviteBtn.disabled = false;
+          setLobbyStatus('Lawan tidak merespons (Waktu Habis)', 'err');
+          try{ c.close(); }catch(e){}
+        }
+      }, 60000); 
+
+      c.on('open', function(){ setLobbyStatus('Menunggu ' + target + ' menerima…', 'pulse'); });
+
+      c.on('data', function(data){
+        if(data.type === 'accept' && !settled){
+          settled = true; clearTimeout(timeoutH);
+          myRole = 'w'; oppLabel = target;
+          startGame(c);
+        } else if(data.type === 'reject' && !settled){
+          settled = true; clearTimeout(timeoutH);
+          inviteBtn.disabled = false;
+          setLobbyStatus(data.reason === 'busy' ? (target + ' sedang bermain') : (target + ' menolak undangan'), 'err');
+        }
+      });
+
+      c.on('error', function(){
+        if(!settled){ settled = true; clearTimeout(timeoutH); inviteBtn.disabled = false; setLobbyStatus('Gagal terhubung ke ' + target, 'err'); }
+      });
+
+      c.on('close', function(){
+        if(!settled){ settled = true; clearTimeout(timeoutH); inviteBtn.disabled = false; setLobbyStatus('Koneksi ditutup', 'err'); }
+      });
     }
-  }
-  buildBoardDom();
 
-  function startGame(c){
-    conn = c;
-    conn.on('data', handleGameData);
-    conn.on('close', function(){ handleOpponentLeft(); });
+    acceptBtn.addEventListener('click', function(){
+      if(!pendingConn) return;
+      var c = pendingConn; pendingConn = null;
+      inviteModal.classList.remove('show');
+      myRole = 'b'; oppLabel = c.peer;
+      c.send({type:'accept'});
+      startGame(c);
+    });
 
-    state = Chess.initialState();
-    selected = null; selLegal = [];
-    gameOver = false; lastMove = null;
-    capturedByMe = []; capturedByOpp = [];
+    declineBtn.addEventListener('click', function(){
+      if(!pendingConn) return;
+      pendingConn.send({type:'reject', reason:'declined'});
+      pendingConn.close();
+      pendingConn = null;
+      inviteModal.classList.remove('show');
+    });
 
-    boardEl.classList.toggle('flipped', myRole === 'b');
-    myMarkLabel.innerHTML = myRole==='w' ? '♔ PUTIH' : '♚ HITAM';
-    myMarkLabel.className = 'mark ' + (myRole==='w' ? 'mark-w' : 'mark-b');
-    oppMarkLabel.innerHTML = myRole==='w' ? '♚ HITAM' : '♔ PUTIH';
-    oppMarkLabel.className = 'mark ' + (myRole==='w' ? 'mark-b' : 'mark-w');
-    oppIdLabel.textContent = oppLabel;
+    copyBtn.addEventListener('click', function(){
+      if(!myId) return;
+      var done = function(){ toast('ID disalin: ' + myId); };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(myId).then(done).catch(done);
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = myId; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        document.body.removeChild(ta);
+        done();
+      }
+    });
 
-    resultOverlay.classList.remove('show');
-    lobbyScreen.hidden = true;
-    gameScreen.hidden = false;
-    inviteBtn.disabled = false;
-    renderCaptured();
-    render();
-  }
+    var cellEls = [];
+    function buildBoardDom(){
+      boardEl.innerHTML = '';
+      cellEls = [];
+      for(var i=0;i<64;i++){
+        var r = Math.floor(i/8), c = i%8;
+        var cell = document.createElement('div');
+        cell.className = 'cell ' + (((r+c)%2===0) ? 'light' : 'dark');
+        cell.dataset.index = i;
+        cell.addEventListener('click', onCellClick);
+        boardEl.appendChild(cell);
+        cellEls.push(cell);
+      }
+    }
+    buildBoardDom();
 
-  function handleGameData(data){
-    if(data.type === 'move'){
-      Chess.makeMove(state, data.from, data.to, data.promo || 'Q');
-      lastMove = {from:data.from, to:data.to};
-      trackCapture(data.captured, false);
-      afterMove();
-    } else if(data.type === 'restart'){
+    function startGame(c){
+      conn = c;
+      conn.on('data', handleGameData);
+      conn.on('close', function(){ handleOpponentLeft(); });
+
+      state = Chess.initialState();
+      selected = null; selLegal = [];
+      gameOver = false; lastMove = null;
+      capturedByMe = []; capturedByOpp = [];
+
+      boardEl.classList.toggle('flipped', myRole === 'b');
+      myMarkLabel.innerHTML = myRole==='w' ? '♔ PUTIH' : '♚ HITAM';
+      myMarkLabel.className = 'mark ' + (myRole==='w' ? 'mark-w' : 'mark-b');
+      oppMarkLabel.innerHTML = myRole==='w' ? '♚ HITAM' : '♔ PUTIH';
+      oppMarkLabel.className = 'mark ' + (myRole==='w' ? 'mark-b' : 'mark-w');
+      oppIdLabel.textContent = oppLabel;
+
+      resultOverlay.classList.remove('show');
+      lobbyScreen.hidden = true;
+      gameScreen.hidden = false;
+      inviteBtn.disabled = false;
+      renderCaptured();
+      render();
+    }
+
+    function handleGameData(data){
+      if(data.type === 'move'){
+        Chess.makeMove(state, data.from, data.to, data.promo || 'Q');
+        lastMove = {from:data.from, to:data.to};
+        trackCapture(data.captured, false);
+        afterMove();
+      } else if(data.type === 'restart'){
+        state = Chess.initialState();
+        selected = null; selLegal = []; gameOver = false; lastMove = null;
+        capturedByMe = []; capturedByOpp = [];
+        resultOverlay.classList.remove('show');
+        renderCaptured();
+        render();
+      } else if(data.type === 'leave'){
+        handleOpponentLeft();
+      }
+    }
+
+    function trackCapture(capturedPieceStr, mine){
+      if(!capturedPieceStr) return;
+      if(mine) capturedByMe.push(capturedPieceStr);
+      else capturedByOpp.push(capturedPieceStr);
+      renderCaptured();
+    }
+
+    function renderCaptured(){
+      myCapturedEl.innerHTML = capturedByMe.map(function(p){ return '<span class="piece '+p[0]+'">'+PIECE_GLYPH[p]+'</span>'; }).join('');
+      oppCapturedEl.innerHTML = capturedByOpp.map(function(p){ return '<span class="piece '+p[0]+'">'+PIECE_GLYPH[p]+'</span>'; }).join('');
+    }
+
+    function onCellClick(e){
+      if(gameOver || !state) return;
+      var i = parseInt(e.currentTarget.dataset.index, 10);
+      if(state.turn !== myRole) return;
+
+      if(selected !== null){
+        var target = selLegal.find(function(m){ return m.to === i; });
+        if(target){
+          doMove(selected, i, target);
+          clearSelection();
+          return;
+        }
+      }
+      var piece = state.board[i];
+      if(piece && piece[0] === myRole){
+        selected = i;
+        selLegal = Chess.legalMoves(state, i);
+        render();
+      } else {
+        clearSelection();
+      }
+    }
+
+    function clearSelection(){ selected = null; selLegal = []; render(); }
+
+    function doMove(from, to, meta){
+      if(meta.promo){
+        pendingPromo = { from:from, to:to };
+        openPromoPicker(myRole);
+        return;
+      }
+      commitMove(from, to, null);
+    }
+
+    function commitMove(from, to, promoChoice){
+      var result = Chess.makeMove(state, from, to, promoChoice || 'Q');
+      if(!result) return;
+      lastMove = {from:from, to:to};
+      trackCapture(result.captured, true);
+      if(conn){
+        conn.send({type:'move', from:from, to:to, promo:promoChoice || null, captured:result.captured});
+      }
+      afterMove(result);
+    }
+
+    var PROMO_PIECES = ['Q','R','B','N'];
+    function openPromoPicker(color){
+      promoGrid.innerHTML = '';
+      PROMO_PIECES.forEach(function(pt){
+        var key = color+pt;
+        var div = document.createElement('div');
+        div.className = 'promo-opt piece ' + color;
+        div.textContent = PIECE_GLYPH[key];
+        div.addEventListener('click', function(){
+          promoModal.classList.remove('show');
+          var pp = pendingPromo; pendingPromo = null;
+          clearSelection();
+          commitMove(pp.from, pp.to, pt);
+        });
+        promoGrid.appendChild(div);
+      });
+      promoModal.classList.add('show');
+    }
+
+    function afterMove(resultMaybe){
+      var result = resultMaybe;
+      if(!result){
+        var oppColor = state.turn;
+        result = {
+          isCheck: Chess.isInCheck(state, oppColor),
+          isCheckmate: false,
+          isStalemate: false
+        };
+        var oppHasMoves = false;
+        for(var s=0;s<64 && !oppHasMoves;s++){
+          var p = state.board[s];
+          if(p && p[0]===oppColor && Chess.legalMoves(state,s).length>0) oppHasMoves = true;
+        }
+        if(!oppHasMoves){
+          if(result.isCheck) result.isCheckmate = true; else result.isStalemate = true;
+        }
+      }
+      render();
+      if(result.isCheckmate){
+        gameOver = true;
+        var winner = state.turn === 'w' ? 'b' : 'w';
+        showResult(winner === myRole ? 'win' : 'lose', 'Skakmat');
+      } else if(result.isStalemate){
+        gameOver = true;
+        showResult('draw', 'Stalemate — tidak ada langkah legal');
+      }
+    }
+
+    function render(){
+      for(var i=0;i<64;i++){
+        var cell = cellEls[i];
+        var piece = state.board[i];
+        cell.classList.remove('selected','legal','legal-capture','check','last-from','last-to');
+        var isLegalTarget = selLegal.find(function(m){ return m.to === i; });
+        if(selected === i) cell.classList.add('selected');
+        if(isLegalTarget) cell.classList.add(isLegalTarget.capture ? 'legal-capture' : 'legal');
+        if(lastMove && (i === lastMove.from)) cell.classList.add('last-from');
+        if(lastMove && (i === lastMove.to)) cell.classList.add('last-to');
+
+        var curKey = piece || '';
+        if(cell.dataset.rendered !== curKey){
+          if(piece){
+            cell.innerHTML = '<span class="piece ' + piece[0] + ' pop">' + PIECE_GLYPH[piece] + '</span>';
+          } else {
+            cell.innerHTML = '';
+          }
+          cell.dataset.rendered = curKey;
+        }
+        cell.classList.toggle('fillable', !!piece && piece[0]===myRole && state.turn===myRole && !gameOver);
+      }
+      var wCheck = Chess.isInCheck(state,'w');
+      var bCheck = Chess.isInCheck(state,'b');
+      if(wCheck) cellEls[state.kingPos.w].classList.add('check');
+      if(bCheck) cellEls[state.kingPos.b].classList.add('check');
+
+      if(!gameOver){
+        var myCheck = Chess.isInCheck(state, myRole);
+        if(state.turn === myRole){
+          turnBanner.textContent = myCheck ? 'Skak! Giliranmu' : 'Giliranmu — pilih bidak';
+          turnBanner.className = 'turn-banner my-turn' + (myCheck ? ' in-check' : '');
+        } else {
+          turnBanner.textContent = 'Menunggu ' + oppLabel + '…';
+          turnBanner.className = 'turn-banner their-turn';
+        }
+      }
+    }
+
+    function showResult(kind, note){
+      if(kind === 'win'){
+        resultTitle.textContent = 'KAMU MENANG';
+        resultTitle.style.color = 'var(--cyan)';
+        resultSub.textContent = note + ' — ' + oppLabel + ' dikalahkan';
+      } else if(kind === 'lose'){
+        resultTitle.textContent = 'KAMU KALAH';
+        resultTitle.style.color = 'var(--magenta)';
+        resultSub.textContent = note + ' — ' + oppLabel + ' menang';
+      } else {
+        resultTitle.textContent = 'REMIS';
+        resultTitle.style.color = '#fff';
+        resultSub.textContent = note;
+      }
+      turnBanner.textContent = 'Permainan selesai';
+      turnBanner.className = 'turn-banner';
+      resultOverlay.classList.add('show');
+    }
+
+    playAgainBtn.addEventListener('click', function(){
+      if(!conn) return;
       state = Chess.initialState();
       selected = null; selLegal = []; gameOver = false; lastMove = null;
       capturedByMe = []; capturedByOpp = [];
       resultOverlay.classList.remove('show');
+      conn.send({type:'restart'});
       renderCaptured();
       render();
-    } else if(data.type === 'leave'){
-      handleOpponentLeft();
-    }
-  }
-
-  function trackCapture(capturedPieceStr, mine){
-    if(!capturedPieceStr) return;
-    if(mine) capturedByMe.push(capturedPieceStr);
-    else capturedByOpp.push(capturedPieceStr);
-    renderCaptured();
-  }
-
-  function renderCaptured(){
-    myCapturedEl.innerHTML = capturedByMe.map(function(p){ return '<span class="piece '+p[0]+'">'+PIECE_GLYPH[p]+'</span>'; }).join('');
-    oppCapturedEl.innerHTML = capturedByOpp.map(function(p){ return '<span class="piece '+p[0]+'">'+PIECE_GLYPH[p]+'</span>'; }).join('');
-  }
-
-  function onCellClick(e){
-    if(gameOver || !state) return;
-    var i = parseInt(e.currentTarget.dataset.index, 10);
-    if(state.turn !== myRole) return;
-
-    if(selected !== null){
-      var target = selLegal.find(function(m){ return m.to === i; });
-      if(target){
-        doMove(selected, i, target);
-        clearSelection();
-        return;
-      }
-    }
-    var piece = state.board[i];
-    if(piece && piece[0] === myRole){
-      selected = i;
-      selLegal = Chess.legalMoves(state, i);
-      render();
-    } else {
-      clearSelection();
-    }
-  }
-
-  function clearSelection(){ selected = null; selLegal = []; render(); }
-
-  function doMove(from, to, meta){
-    if(meta.promo){
-      pendingPromo = { from:from, to:to };
-      openPromoPicker(myRole);
-      return;
-    }
-    commitMove(from, to, null);
-  }
-
-  function commitMove(from, to, promoChoice){
-    var result = Chess.makeMove(state, from, to, promoChoice || 'Q');
-    if(!result) return;
-    lastMove = {from:from, to:to};
-    trackCapture(result.captured, true);
-    if(conn){
-      conn.send({type:'move', from:from, to:to, promo:promoChoice || null, captured:result.captured});
-    }
-    afterMove(result);
-  }
-
-  var PROMO_PIECES = ['Q','R','B','N'];
-  function openPromoPicker(color){
-    promoGrid.innerHTML = '';
-    PROMO_PIECES.forEach(function(pt){
-      var key = color+pt;
-      var div = document.createElement('div');
-      div.className = 'promo-opt piece ' + color;
-      div.textContent = PIECE_GLYPH[key];
-      div.addEventListener('click', function(){
-        promoModal.classList.remove('show');
-        var pp = pendingPromo; pendingPromo = null;
-        clearSelection();
-        commitMove(pp.from, pp.to, pt);
-      });
-      promoGrid.appendChild(div);
     });
-    promoModal.classList.add('show');
-  }
 
-  function afterMove(resultMaybe){
-    var result = resultMaybe;
-    if(!result){
-      var oppColor = state.turn;
-      result = {
-        isCheck: Chess.isInCheck(state, oppColor),
-        isCheckmate: false,
-        isStalemate: false
-      };
-      var oppHasMoves = false;
-      for(var s=0;s<64 && !oppHasMoves;s++){
-        var p = state.board[s];
-        if(p && p[0]===oppColor && Chess.legalMoves(state,s).length>0) oppHasMoves = true;
-      }
-      if(!oppHasMoves){
-        if(result.isCheck) result.isCheckmate = true; else result.isStalemate = true;
-      }
+    function handleOpponentLeft(){
+      if(!gameScreen.hidden) toast(oppLabel + ' meninggalkan permainan');
+      teardownConnection();
+      backToLobby();
     }
-    render();
-    if(result.isCheckmate){
-      gameOver = true;
-      var winner = state.turn === 'w' ? 'b' : 'w';
-      showResult(winner === myRole ? 'win' : 'lose', 'Skakmat');
-    } else if(result.isStalemate){
-      gameOver = true;
-      showResult('draw', 'Stalemate — tidak ada langkah legal');
+
+    leaveBtn.addEventListener('click', function(){
+      if(conn){ try{ conn.send({type:'leave'}); }catch(e){} }
+      teardownConnection();
+      backToLobby();
+    });
+
+    function teardownConnection(){
+      if(conn){ try{ conn.close(); }catch(e){} conn = null; }
     }
-  }
 
-  function render(){
-    for(var i=0;i<64;i++){
-      var cell = cellEls[i];
-      var piece = state.board[i];
-      cell.classList.remove('selected','legal','legal-capture','check','last-from','last-to');
-      var isLegalTarget = selLegal.find(function(m){ return m.to === i; });
-      if(selected === i) cell.classList.add('selected');
-      if(isLegalTarget) cell.classList.add(isLegalTarget.capture ? 'legal-capture' : 'legal');
-      if(lastMove && (i === lastMove.from)) cell.classList.add('last-from');
-      if(lastMove && (i === lastMove.to)) cell.classList.add('last-to');
-
-      var curKey = piece || '';
-      if(cell.dataset.rendered !== curKey){
-        if(piece){
-          cell.innerHTML = '<span class="piece ' + piece[0] + ' pop">' + PIECE_GLYPH[piece] + '</span>';
-        } else {
-          cell.innerHTML = '';
-        }
-        cell.dataset.rendered = curKey;
-      }
-      cell.classList.toggle('fillable', !!piece && piece[0]===myRole && state.turn===myRole && !gameOver);
+    function backToLobby(){
+      gameScreen.hidden = true;
+      lobbyScreen.hidden = false;
+      opponentInput.value = '';
+      inviteBtn.disabled = false;
+      setLobbyStatus('Siap menerima undangan', '');
     }
-    var wCheck = Chess.isInCheck(state,'w');
-    var bCheck = Chess.isInCheck(state,'b');
-    if(wCheck) cellEls[state.kingPos.w].classList.add('check');
-    if(bCheck) cellEls[state.kingPos.b].classList.add('check');
 
-    if(!gameOver){
-      var myCheck = Chess.isInCheck(state, myRole);
-      if(state.turn === myRole){
-        turnBanner.textContent = myCheck ? 'Skak! Giliranmu' : 'Giliranmu — pilih bidak';
-        turnBanner.className = 'turn-banner my-turn' + (myCheck ? ' in-check' : '');
-      } else {
-        turnBanner.textContent = 'Menunggu ' + oppLabel + '…';
-        turnBanner.className = 'turn-banner their-turn';
-      }
-    }
-  }
-
-  function showResult(kind, note){
-    if(kind === 'win'){
-      resultTitle.textContent = 'KAMU MENANG';
-      resultTitle.style.color = 'var(--cyan)'; resultTitle.style.textShadow = '0 0 16px var(--cyan)';
-      resultSub.textContent = note + ' — ' + oppLabel + ' dikalahkan';
-    } else if(kind === 'lose'){
-      resultTitle.textContent = 'KAMU KALAH';
-      resultTitle.style.color = 'var(--magenta)'; resultTitle.style.textShadow = '0 0 16px var(--magenta)';
-      resultSub.textContent = note + ' — ' + oppLabel + ' menang';
-    } else {
-      resultTitle.textContent = 'REMIS';
-      resultTitle.style.color = '#fff'; resultTitle.style.textShadow = '0 0 16px #fff';
-      resultSub.textContent = note;
-    }
-    turnBanner.textContent = 'Permainan selesai';
-    turnBanner.className = 'turn-banner';
-    resultOverlay.classList.add('show');
-  }
-
-  playAgainBtn.addEventListener('click', function(){
-    if(!conn) return;
-    state = Chess.initialState();
-    selected = null; selLegal = []; gameOver = false; lastMove = null;
-    capturedByMe = []; capturedByOpp = [];
-    resultOverlay.classList.remove('show');
-    conn.send({type:'restart'});
-    renderCaptured();
-    render();
-  });
-
-  function handleOpponentLeft(){
-    if(!gameScreen.hidden) toast(oppLabel + ' meninggalkan permainan');
-    teardownConnection();
-    backToLobby();
-  }
-
-  leaveBtn.addEventListener('click', function(){
-    if(conn){ try{ conn.send({type:'leave'}); }catch(e){} }
-    teardownConnection();
-    backToLobby();
-  });
-
-  function teardownConnection(){
-    if(conn){ try{ conn.close(); }catch(e){} conn = null; }
-  }
-
-  function backToLobby(){
-    gameScreen.hidden = true;
-    lobbyScreen.hidden = false;
-    opponentInput.value = '';
-    inviteBtn.disabled = false;
-    setLobbyStatus('Siap menerima undangan', '');
-  }
-
-  initPeer();
+    initPeer();
   } 
 })();
 </script>
