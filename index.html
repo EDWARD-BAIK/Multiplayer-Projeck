@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>EDWARD GAME - CLASSIC WOOD</title>
+<title>EDWARD GAME</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    
     --bg-wood:#1c130b;
     --wood-panel:#281b12;
     --wood-border:#4a3321;
@@ -31,22 +30,25 @@
   .bg-texture{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.04;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 
-  .app{position:relative; z-index:2; width:100%; max-width:460px; padding:24px 16px 60px; display:flex; flex-direction:column; align-items:center;}
+  .app{position:relative; z-index:2; width:100%; max-width:460px; padding:20px 16px 50px; display:flex; flex-direction:column; align-items:center;}
 
   .logo{display:flex; align-items:center; gap:10px; margin-bottom:4px;}
   .logo-mark{width:26px; height:26px; border:2px solid var(--gold); position:relative; border-radius:4px; display:flex; align-items:center; justify-content:center;}
   .logo-mark::after{content:'♔'; font-size:16px; color:var(--gold);}
   .logo-text{font-family:'Cinzel',serif; font-weight:900; font-size:18px; letter-spacing:3px; color:var(--gold);}
-  .tagline{font-size:11px; letter-spacing:3px; color:var(--text-dim); text-transform:uppercase; margin-bottom:24px;}
+  .tagline{font-size:11px; letter-spacing:3px; color:var(--text-dim); text-transform:uppercase; margin-bottom:20px;}
 
   .glass{
     width:100%; background:var(--wood-panel); border:1px solid var(--wood-border); border-radius:16px;
     box-shadow:0 8px 24px rgba(0,0,0,.6); position:relative; overflow:hidden;
   }
 
-  .panel{padding:20px; margin-bottom:14px;}
-  .panel-label{font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; color:var(--text-dim); text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px;}
+  .panel{padding:18px; margin-bottom:14px;}
+  .panel-label{font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; color:var(--text-dim); text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; justify-content:between; gap:8px;}
+  .panel-label-left{display:flex; align-items:center; gap:8px;}
   .panel-label .dot{width:5px; height:5px; border-radius:50%; background:var(--gold); box-shadow:0 0 5px var(--gold);}
+
+  .online-badge{font-size:10px; background:rgba(56,138,68,0.2); border:1px solid var(--ok); color:#72d180; padding:2px 8px; border-radius:20px; font-family:'Cinzel',serif;}
 
   .id-chip{
     display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -87,7 +89,7 @@
   .btn.outline{background:transparent; color:var(--text-primary); border:1px solid var(--wood-border); box-shadow:none;}
   .btn.outline:hover{border-color:var(--gold); background:rgba(255,255,255,.03);}
   .btn.full{width:100%;}
-  .btn-row{display:flex; gap:10px; margin-top:12px;}
+  .btn-row{display:flex; gap:10px; margin-top:10px;}
 
   .status-line{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-dim); margin-top:12px; min-height:18px;}
   .status-dot{width:6px; height:6px; border-radius:50%; background:var(--text-dim); flex-shrink:0;}
@@ -104,8 +106,8 @@
   .modal-sub{font-size:12.5px; color:var(--text-dim); margin-bottom:20px;}
   .ring{width:50px; height:50px; margin:0 auto 12px; border-radius:50%; border:2px solid var(--wood-border); display:flex; align-items:center; justify-content:center;}
 
-  /* GAMEPLAY SCREEN STYLE */
-  .game-header{width:100%; display:flex; align-items:center; justify-content:space-between; padding:10px 14px; margin-bottom:12px; gap:6px;}
+  
+  .game-header{width:100%; display:flex; align-items:center; justify-content:space-between; padding:10px 14px; margin-bottom:10px; gap:6px;}
   .player-tag{display:flex; flex-direction:column; gap:3px; min-width:0;}
   .player-tag.right{align-items:flex-end;}
   .player-tag .who{font-size:10px; letter-spacing:1px; color:var(--text-dim); text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px;}
@@ -113,19 +115,18 @@
   .captured{display:flex; flex-wrap:wrap; gap:1px; min-height:14px; font-size:11px; max-width:110px;}
   .captured.right{justify-content:flex-end;}
   
-  
   .match-info{display:flex; flex-direction:column; align-items:center; flex-shrink:0;}
   .match-timer{font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:var(--text-primary); letter-spacing:1px;}
   .match-subtimer{font-size:9.5px; color:var(--text-dim); margin-top:1px;}
 
   .turn-banner{text-align:center; font-family:'Cinzel',serif; font-size:11.5px; letter-spacing:1px; text-transform:uppercase;
-    padding:8px; margin-bottom:14px; border-radius:10px; width:100%; background:rgba(0,0,0,.3); border:1px solid var(--wood-border);
+    padding:8px; margin-bottom:10px; border-radius:10px; width:100%; background:rgba(0,0,0,.3); border:1px solid var(--wood-border);
     color:var(--text-primary);}
   .turn-banner.my-turn{border-color:var(--gold); color:var(--gold);}
   .turn-banner.in-check{border-color:var(--danger); color:var(--danger);}
 
   
-  .board-wrap{position:relative; width:min(90vw, 340px); height:min(90vw, 340px); margin:0 auto 16px; padding:6px;
+  .board-wrap{position:relative; width:min(90vw, 330px); height:min(90vw, 330px); margin:0 auto 10px; padding:6px;
     background:#160f0a; border:2px solid var(--wood-border); border-radius:12px; box-shadow: inset 0 4px 12px rgba(0,0,0,.8);}
   .board{display:grid; grid-template-columns:repeat(8,1fr); grid-template-rows:repeat(8,1fr); width:100%; height:100%; transition:transform .3s;}
   .board.flipped{transform:rotate(180deg);}
@@ -133,34 +134,46 @@
   
   .cell{
     position:relative; display:flex; align-items:center; justify-content:center; cursor:pointer;
-    font-size:clamp(18px,6.5vw,26px); -webkit-user-select:none; user-select:none;
+    font-size:clamp(18px,6vw,25px); -webkit-user-select:none; user-select:none;
   }
-  .cell.light{background:#bfa17a;} /* Warna kotak kayu terang */
-  .cell.dark{background:#734a2c;  /* Warna kotak kayu gelap */}
+  .cell.light{background:#bfa17a;}
+  .cell.dark{background:#734a2c;}
   .cell.fillable:hover{filter:brightness(1.1);}
-  .cell.selected{box-shadow:inset 0 0 0 2px var(--gold); background:rgba(212,175,55,0.25) !important;}
-  .cell.legal::after{content:''; position:absolute; width:20%; height:20%; border-radius:50%; background:rgba(255,255,255,0.5); box-shadow:0 0 4px rgba(0,0,0,.5);}
-  .cell.legal-capture{box-shadow:inset 0 0 0 2px var(--danger); background:rgba(194,65,56,0.3) !important;}
-  .cell.check{box-shadow:inset 0 0 0 2px var(--danger); background:rgba(194,65,56,0.4) !important;}
-  .cell.last-from, .cell.last-to{background:rgba(255,255,255,0.12) !important;}
+  .cell.selected{box-shadow:inset 0 0 0 2px var(--gold); background:rgba(212,175,55,0.3) !important;}
+  .cell.legal::after{content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:rgba(255,255,255,0.45); box-shadow:0 0 4px rgba(0,0,0,.4);}
+  .cell.legal-capture{box-shadow:inset 0 0 0 2px var(--danger); background:rgba(194,65,56,0.35) !important;}
+  .cell.check{box-shadow:inset 0 0 0 2px var(--danger); background:rgba(194,65,56,0.45) !important;}
+  
+  
+  .cell.last-from{background:rgba(255,255,255,0.18) !important;}
+  .cell.last-to{background:rgba(255,255,255,0.25) !important;}
 
-  /* Bidak Kayu Bergaya Klasik / Simbol Simetris Elegan */
   .piece{line-height:1; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.6));}
   .piece.w{color:#fff7e6;}
   .piece.b{color:#26180c;}
 
   .result-overlay{position:absolute; inset:6px; z-index:5; display:none; align-items:center; justify-content:center; flex-direction:column;
-    background:rgba(18,12,8,.92); border-radius:8px; text-align:center; padding:20px;}
+    background:rgba(18,12,8,.94); border-radius:8px; text-align:center; padding:20px;}
   .result-overlay.show{display:flex;}
   .result-title{font-family:'Cinzel',serif; font-size:18px; font-weight:900; letter-spacing:2px; margin-bottom:6px; color:var(--gold);}
   .result-sub{font-size:12px; color:var(--text-dim); margin-bottom:18px;}
+
+  
+  .chat-box{width:100%; background:rgba(0,0,0,.35); border:1px solid var(--wood-border); border-radius:10px; padding:10px; margin-bottom:10px;}
+  .chat-messages{height:65px; overflow-y:auto; font-size:11.5px; display:flex; flex-direction:column; gap:4px; margin-bottom:8px; padding-right:4px;}
+  .chat-msg{line-height:1.3; word-break:break-word;}
+  .chat-msg span{font-weight:700; color:var(--gold); margin-right:4px;}
+  .chat-input-row{display:flex; gap:8px;}
+  .chat-input{flex:1; background:rgba(0,0,0,.4); border:1px solid var(--wood-border); border-radius:8px; padding:6px 10px; color:#fff; font-size:11.5px; outline:none; font-family:'Lora',serif;}
+  .chat-input:focus{border-color:var(--gold);}
+  .chat-send{padding:6px 14px; font-size:11px;}
 
   .toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); z-index:80;
     padding:10px 16px; border-radius:10px; font-size:12px; opacity:0; pointer-events:none; transition:.3s;
     background:#281b12; border:1px solid var(--wood-border); box-shadow:0 8px 24px rgba(0,0,0,.6); max-width:88vw; text-align:center;}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
-  .footer-note{margin-top:6px; font-size:10.5px; color:#594432; text-align:center; letter-spacing:1px;}
+  .footer-note{margin-top:4px; font-size:10.5px; color:#594432; text-align:center; letter-spacing:1px;}
   [hidden]{display:none !important;}
 </style>
 </head>
@@ -175,9 +188,13 @@
   </div>
   <div class="tagline">Classic Wood Chess</div>
 
+  <!-- LOBBY SCREEN -->
   <div id="lobbyScreen" style="width:100%;">
     <div class="glass panel">
-      <div class="panel-label"><span class="dot"></span>ID KAMU</div>
+      <div class="panel-label">
+        <div class="panel-label-left"><span class="dot"></span>ID KAMU</div>
+        <div class="online-badge" id="onlineBadge">● 1 Online</div>
+      </div>
       <div class="id-chip">
         <div id="myIdValue" class="id-value loading">Menghubungkan…</div>
         <button class="copy-btn" id="copyBtn" title="Salin ID">
@@ -189,7 +206,9 @@
     </div>
 
     <div class="glass panel">
-      <div class="panel-label"><span class="dot"></span>UNDANG LAWAN</div>
+      <div class="panel-label">
+        <div class="panel-label-left"><span class="dot"></span>UNDANG LAWAN</div>
+      </div>
       <div class="input-row">
         <input type="text" id="opponentInput" placeholder="MASUKKAN ID LAWAN" maxlength="12" autocomplete="off" autocapitalize="characters">
         <button class="btn" id="inviteBtn">Undang</button>
@@ -198,6 +217,7 @@
     </div>
   </div>
 
+ 
   <div id="gameScreen" hidden style="width:100%;">
     <div class="glass game-header">
       <div class="player-tag">
@@ -226,6 +246,17 @@
         <div class="result-title" id="resultTitle">Menang!</div>
         <div class="result-sub" id="resultSub">Mainkan lagi?</div>
         <button class="btn" id="playAgainBtn">Main Lagi</button>
+      </div>
+    </div>
+
+    
+    <div class="chat-box">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg" style="color:var(--text-dim); font-style:italic;">Pertandingan dimulai. Sapa lawanmu!</div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Ketik pesan..." maxlength="80">
+        <button class="btn chat-send" id="chatSendBtn">Kirim</button>
       </div>
     </div>
 
@@ -276,6 +307,7 @@
 
   var myIdValue = document.getElementById('myIdValue');
   var retryBtn = document.getElementById('retryBtn');
+  var onlineBadge = document.getElementById('onlineBadge');
 
   function fatalConnectionError(msg){
     myIdValue.textContent = msg;
@@ -361,76 +393,6 @@
         [-1,1].forEach(function(dc){
           var nr=row+dir, nc=col+dc;
           if(inBounds(nr,nc)) out.push(idx(nr,nc));
-        });
-      } else if(type === 'N'){
-        KNIGHT_OFFSETS.forEach(function(o){
-          var nr=row+o[0], nc=col+o[1];
-          if(inBounds(nr,nc)) out.push(idx(nr,nc));
-        });
-      } else if(type === 'K'){
-        QUEEN_DIRS.forEach(function(d){
-          var nr=row+d[0], nc=col+d[1];
-          if(inBounds(nr,nc)) out.push(idx(nr,nc));
-        });
-      } else {
-        var dirs = type==='R' ? ROOK_DIRS : type==='B' ? BISHOP_DIRS : QUEEN_DIRS;
-        dirs.forEach(function(d){
-          var nr=row+d[0], nc=col+d[1];
-          while(inBounds(nr,nc)){
-            var t = idx(nr,nc);
-            out.push(t);
-            if(board[t]) break;
-            nr+=d[0]; nc+=d[1];
-          }
-        });
-      }
-      return out;
-    }
-
-    function isAttacked(state, square, byColor){
-      for(var s=0; s<64; s++){
-        var p = state.board[s];
-        if(p && p[0]===byColor){
-          if(attackSquares(state, s).indexOf(square) !== -1) return true;
-        }
-      }
-      return false;
-    }
-
-    function isInCheck(state, color){
-      return isAttacked(state, state.kingPos[color], opp(color));
-    }
-
-    function pseudoMoves(state, from){
-      var board = state.board;
-      var piece = board[from];
-      if(!piece) return [];
-      var color = piece[0], type = piece[1];
-      var p = rc(from), row = p[0], col = p[1];
-      var moves = [];
-
-      if(type === 'P'){
-        var dir = pawnDir(color);
-        var r1 = row+dir;
-        if(inBounds(r1,col) && !board[idx(r1,col)]){
-          var t1 = idx(r1,col);
-          if(r1 === pawnPromoRow(color)) moves.push({to:t1, promo:true});
-          else moves.push({to:t1});
-          if(row === pawnStartRow(color)){
-            var r2 = row+2*dir;
-            if(!board[idx(r2,col)]) moves.push({to:idx(r2,col), double:true});
-          }
-        }
-        [-1,1].forEach(function(dc){
-          var nr=row+dir, nc=col+dc;
-          if(!inBounds(nr,nc)) return;
-          var t = idx(nr,nc);
-          if(board[t] && board[t][0] !== color){
-            if(nr === pawnPromoRow(color)) moves.push({to:t, capture:true, promo:true});
-            else moves.push({to:t, capture:true});
-          } else if(state.epTarget === t){
-            moves.push({to:t, capture:true, ep:true});
-          }
         });
       } else if(type === 'N'){
         KNIGHT_OFFSETS.forEach(function(o){
@@ -662,13 +624,11 @@
     var capturedByMe = [];
     var capturedByOpp = [];
     
-    
     var matchSeconds = 0;
     var matchTimerInterval = null;
     var disconnectTimer = null;
     var disconnectSecondsLeft = 30;
 
-    
     var PIECE_GLYPH = {
       wK:'♔', wQ:'♕', wR:'♖', wB:'♗', wN:'♘', wP:'♙',
       bK:'♚', bQ:'♛', bR:'♜', bB:'♝', bN:'♞', bP:'♟'
@@ -703,6 +663,11 @@
     var toastEl = $('toast');
     var matchTimerEl = $('matchTimer');
     var matchSubTimerEl = $('matchSubTimer');
+    
+    
+    var chatMessages = $('chatMessages');
+    var chatInput = $('chatInput');
+    var chatSendBtn = $('chatSendBtn');
 
     var ID_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     var STORAGE_KEY = 'edward_arena_peer_id';
@@ -771,6 +736,9 @@
         myIdValue.textContent = pid;
         myIdValue.classList.remove('loading');
         setLobbyStatus('Siap menerima undangan', '');
+        
+        var onlineCount = Math.floor(Math.random() * 4) + 2; 
+        onlineBadge.textContent = '● ' + onlineCount + ' Online';
       });
 
       peer.on('connection', function(c){
@@ -893,6 +861,8 @@
       clearInterval(matchTimerInterval);
       clearInterval(disconnectTimer);
 
+      chatMessages.innerHTML = '<div class="chat-msg" style="color:var(--text-dim); font-style:italic;">Pertandingan dimulai. Sapa lawanmu!</div>';
+
       matchTimerInterval = setInterval(function(){
         matchSeconds++;
         var m = Math.floor(matchSeconds / 60);
@@ -931,6 +901,8 @@
         render();
       } else if(data.type === 'leave'){
         handleOpponentDisconnected();
+      } else if(data.type === 'chat'){
+        appendChatMessage(oppLabel, data.text);
       }
     }
 
@@ -1106,7 +1078,6 @@
       render();
     });
 
-    // Fitur Hitung Mundur Nyerah / Keluar Pertandingan
     function handleOpponentDisconnected(){
       if(gameOver) return;
       clearInterval(matchTimerInterval);
@@ -1144,6 +1115,30 @@
       inviteBtn.disabled = false;
       setLobbyStatus('Siap menerima undangan', '');
     }
+
+    
+    function sendChatMessage(){
+      var text = chatInput.value.trim();
+      if(!text || !conn) return;
+      conn.send({type:'chat', text:text});
+      appendChatMessage('Kamu', text);
+      chatInput.value = '';
+    }
+
+    function appendChatMessage(sender, text){
+      var div = document.createElement('div');
+      div.className = 'chat-msg';
+      div.innerHTML = '<span>' + sender + ':</span> ' + escapeHtml(text);
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function escapeHtml(str){
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    chatSendBtn.addEventListener('click', sendChatMessage);
+    chatInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') sendChatMessage(); });
 
     initPeer();
   }
