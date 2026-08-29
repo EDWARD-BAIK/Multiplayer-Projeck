@@ -1,752 +1,495 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>♟️ Peer Chess Arena</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-<style>
-  *{box-sizing:border-box}
-  body{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);color:#f8fafc;min-height:100vh}
-  .glass{background:rgba(15,23,42,.75);backdrop-filter:blur(16px);border:1px solid rgba(100,116,139,.25)}
-  .glow-cyan{box-shadow:0 0 20px rgba(34,211,238,.15)}
-  .glow-indigo{box-shadow:0 0 20px rgba(99,102,241,.15)}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Kingdom Run - Multiplayer</title>
+    <!-- Import PeerJS -->
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <!-- Font Pixel -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #2c3e50;
+            font-family: 'Press Start 2P', cursive;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-  /* Toast */
-  #toast-box{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-  .toast{padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;
-    animation:slideIn .35s ease,fadeOut .4s ease 3.2s forwards;pointer-events:auto;
-    box-shadow:0 8px 30px rgba(0,0,0,.35);max-width:320px}
-  .toast-ok{background:linear-gradient(135deg,#059669,#10b981)}
-  .toast-err{background:linear-gradient(135deg,#dc2626,#ef4444)}
-  .toast-info{background:linear-gradient(135deg,#2563eb,#3b82f6)}
-  .toast-warn{background:linear-gradient(135deg,#d97706,#f59e0b)}
-  @keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
-  @keyframes fadeOut{to{opacity:0;transform:translateY(-10px)}}
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 450px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border: 4px solid #fff;
+        }
 
-  /* Status dot */
-  .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
-  .dot-off{background:#64748b}
-  .dot-on{background:#22c55e;box-shadow:0 0 8px #22c55e}
-  .dot-wait{background:#f59e0b;animation:pulse 1s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+        canvas {
+            display: block;
+            image-rendering: pixelated; /* Agar pixel art tajam */
+            background-color: #87CEEB; /* Warna langit */
+        }
 
-  /* Board highlight */
-  .highlight-move{box-shadow:inset 0 0 0 3px rgba(34,211,238,.7)!important}
-  .highlight-check{box-shadow:inset 0 0 0 3px rgba(239,68,68,.8)!important;background:rgba(239,68,68,.18)!important}
+        /* UI Overlay */
+        .ui-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            text-shadow: 2px 2px #000;
+        }
 
-  /* Captured pieces */
-  .captured{min-height:28px;display:flex;flex-wrap:wrap;gap:2px;font-size:20px;align-items:center}
+        .interactive {
+            pointer-events: auto;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid white;
+        }
 
-  /* Modal */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-  .modal-box{background:linear-gradient(145deg,#1e293b,#0f172a);border:1px solid rgba(100,116,139,.3);
-    border-radius:20px;padding:32px;max-width:400px;width:90%;text-align:center;
-    box-shadow:0 25px 60px rgba(0,0,0,.5);animation:modalPop .3s ease}
-  @keyframes modalPop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+        h1 { font-size: 24px; color: #f1c40f; margin-bottom: 20px; }
+        p { font-size: 12px; line-height: 1.5; margin-bottom: 15px; }
+        
+        input {
+            padding: 10px;
+            font-family: 'Press Start 2P';
+            font-size: 12px;
+            margin-bottom: 10px;
+            width: 200px;
+            text-transform: uppercase;
+        }
 
-  /* Promotion */
-  .promo-btn{width:64px;height:64px;font-size:40px;border-radius:12px;border:2px solid #475569;
-    background:#1e293b;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center}
-  .promo-btn:hover{border-color:#22d3ee;background:#0e7490;transform:scale(1.1)}
+        button {
+            padding: 12px 20px;
+            font-family: 'Press Start 2P';
+            font-size: 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+            box-shadow: 0 4px #c0392b;
+        }
+        button:active { transform: translateY(4px); box-shadow: none; }
+        button.secondary { background: #3498db; box-shadow: 0 4px #2980b9; }
 
-  /* Scrollbar */
-  ::-webkit-scrollbar{width:5px}
-  ::-webkit-scrollbar-track{background:transparent}
-  ::-webkit-scrollbar-thumb{background:#475569;border-radius:99px}
+        .hidden { display: none !important; }
 
-  /* Move history */
-  .move-row{display:grid;grid-template-columns:32px 1fr 1fr;gap:4px;padding:4px 8px;border-radius:6px;font-size:12px}
-  .move-row:nth-child(odd){background:rgba(30,41,59,.6)}
-  .move-row:hover{background:rgba(34,211,238,.08)}
-  .move-num{color:#64748b;font-weight:700}
-  .move-w{color:#e2e8f0;font-weight:600}
-  .move-b{color:#94a3b8;font-weight:600}
+        /* HUD */
+        #hud {
+            position: absolute;
+            top: 10px; left: 10px; right: 10px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            text-shadow: 2px 2px #000;
+        }
+        .bar-container { width: 150px; height: 20px; background: #333; border: 2px solid white; margin-top: 5px;}
+        .stamina-bar { height: 100%; background: #2ecc71; width: 100%; transition: width 0.1s; }
+        .progress-text { font-size: 10px; }
 
-  /* Turn indicator */
-  .turn-badge{padding:4px 14px;border-radius:99px;font-size:12px;font-weight:700;letter-spacing:.5px;transition:.3s}
-  .turn-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)}
-  .turn-black{background:rgba(0,0,0,.4);color:#cbd5e1;border:1px solid rgba(100,116,139,.4)}
-  .turn-you{animation:glowPulse 1.5s infinite}
-  @keyframes glowPulse{0%,100%{box-shadow:0 0 5px rgba(34,211,238,.3)}50%{box-shadow:0 0 15px rgba(34,211,238,.6)}}
-
-  .btn{transition:all .2s;cursor:pointer}
-  .btn:hover{transform:translateY(-1px)}
-  .btn:active{transform:translateY(0)}
-  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
-</style>
+        /* Notifikasi Invite */
+        #invite-modal { z-index: 100; }
+    </style>
 </head>
-<body class="flex flex-col items-center justify-center p-3 md:p-6">
+<body>
 
-<!-- Toast container -->
-<div id="toast-box"></div>
+<div id="game-container">
+    <canvas id="gameCanvas" width="800" height="450"></canvas>
 
-<!-- Promotion Modal -->
-<div id="promo-modal" class="modal-overlay" style="display:none">
-  <div class="modal-box">
-    <h3 class="text-lg font-bold mb-4">♛ Promosi Pion</h3>
-    <p class="text-sm text-slate-400 mb-4">Pilih buah catur:</p>
-    <div class="flex justify-center gap-3" id="promo-options"></div>
-  </div>
-</div>
-
-<!-- Game Over Modal -->
-<div id="gameover-modal" class="modal-overlay" style="display:none">
-  <div class="modal-box">
-    <div id="go-icon" class="text-6xl mb-3">🏆</div>
-    <h2 id="go-title" class="text-2xl font-extrabold mb-2">Skakmat!</h2>
-    <p id="go-desc" class="text-sm text-slate-400 mb-6">Putih memenangkan permainan.</p>
-    <div class="flex gap-3 justify-center">
-      <button onclick="requestRematch()" class="btn bg-indigo-600 hover:bg-indigo-500 px-5 py-2.5 rounded-xl text-sm font-bold">🔄 Rematch</button>
-      <button onclick="closeGameOver()" class="btn bg-slate-700 hover:bg-slate-600 px-5 py-2.5 rounded-xl text-sm font-bold">Tutup</button>
-    </div>
-  </div>
-</div>
-
-<!-- Rematch Request Modal -->
-<div id="rematch-modal" class="modal-overlay" style="display:none">
-  <div class="modal-box">
-    <div class="text-5xl mb-3">🤝</div>
-    <h2 class="text-xl font-bold mb-2">Lawan ingin Rematch!</h2>
-    <p class="text-sm text-slate-400 mb-5">Terima tantangan ulang?</p>
-    <div class="flex gap-3 justify-center">
-      <button onclick="acceptRematch()" class="btn bg-emerald-600 hover:bg-emerald-500 px-6 py-2.5 rounded-xl text-sm font-bold">✅ Terima</button>
-      <button onclick="declineRematch()" class="btn bg-rose-600 hover:bg-rose-500 px-6 py-2.5 rounded-xl text-sm font-bold">❌ Tolak</button>
-    </div>
-  </div>
-</div>
-
-<!-- MAIN CONTAINER -->
-<div class="w-full max-w-5xl glass rounded-3xl shadow-2xl glow-cyan p-4 md:p-8">
-
-  <!-- Header -->
-  <div class="text-center mb-5">
-    <h1 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500">
-      ♟️ Peer Chess Arena
-    </h1>
-    <p class="text-xs text-slate-500 mt-1">Catur Online Peer-to-Peer • Tanpa Server • Langsung di Browser</p>
-  </div>
-
-  <!-- Connection Panel -->
-  <div id="connection-panel" class="w-full flex flex-col lg:flex-row gap-4 items-center justify-between glass rounded-2xl p-4 mb-5 transition-all duration-300">
-    <!-- My ID -->
-    <div class="flex flex-col items-center lg:items-start gap-1">
-      <div class="flex items-center gap-2">
-        <span class="dot dot-off" id="status-dot"></span>
-        <span class="text-[11px] text-slate-400 uppercase tracking-widest font-bold">ID Kamu</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span id="my-id" class="font-mono text-cyan-300 bg-slate-950/80 px-4 py-2 rounded-xl border border-slate-700/60 text-sm select-all tracking-wider">Menghubungkan...</span>
-        <button onclick="copyMyId()" class="btn bg-cyan-600 hover:bg-cyan-500 text-xs px-3 py-2 rounded-lg font-bold">📋 Salin</button>
-      </div>
-    </div>
-
-    <!-- VS -->
-    <div class="text-2xl font-black text-slate-600 hidden lg:block">⚔️</div>
-
-    <!-- Opponent -->
-    <div class="flex flex-col items-center lg:items-end gap-1 w-full lg:w-auto">
-      <span class="text-[11px] text-slate-400 uppercase tracking-widest font-bold">Tantang Lawan</span>
-      <div class="flex items-center gap-2 w-full lg:w-auto">
-        <input type="text" id="peer-id-input" placeholder="Tempel ID lawan di sini..."
-          class="bg-slate-950/80 border border-slate-700/60 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 w-full lg:w-64 placeholder:text-slate-600 transition">
-        <button id="connect-btn" onclick="connectToPeer()"
-          class="btn bg-indigo-600 hover:bg-indigo-500 text-sm font-bold px-5 py-2 rounded-xl whitespace-nowrap shadow-lg shadow-indigo-600/25">
-          ⚔️ Tantang
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Status Bar -->
-  <div class="flex items-center justify-center gap-3 mb-4">
-    <span id="turn-indicator" class="turn-badge turn-white" style="display:none">PUTIH</span>
-    <div id="status-bar" class="text-sm font-semibold text-amber-400 text-center">
-      ⏳ Menghubungkan ke server...
-    </div>
-  </div>
-
-  <!-- Game Area -->
-  <div class="flex flex-col lg:flex-row gap-5 items-center lg:items-start justify-center">
-
-    <!-- Board Column -->
-    <div class="flex flex-col items-center gap-2 w-full max-w-[420px]">
-      <!-- Opponent captured -->
-      <div class="w-full flex items-center justify-between px-1">
-        <div class="captured" id="captured-top"></div>
-        <span id="opp-label" class="text-xs text-slate-500 font-semibold"></span>
-      </div>
-
-      <!-- Board -->
-      <div id="board" class="w-full aspect-square rounded-xl overflow-hidden border-4 border-slate-700/80 shadow-2xl"
-           style="max-width:420px"></div>
-
-      <!-- My captured -->
-      <div class="w-full flex items-center justify-between px-1">
-        <div class="captured" id="captured-bottom"></div>
-        <span id="my-label" class="text-xs text-slate-500 font-semibold"></span>
-      </div>
-    </div>
-
-    <!-- Side Panel -->
-    <div class="flex flex-col gap-3 w-full lg:w-72">
-
-      <!-- Move History -->
-      <div class="glass rounded-2xl p-4">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-          📜 Riwayat Langkah
-        </h3>
-        <div id="move-history" class="h-52 overflow-y-auto rounded-lg bg-slate-950/40 p-1">
-          <p class="text-slate-600 italic text-xs p-3 text-center">Belum ada langkah...</p>
+    <!-- HUD (Heads Up Display) -->
+    <div id="hud" class="hidden">
+        <div>
+            <div style="color:#3498db">PLAYER 1 (YOU)</div>
+            <div class="bar-container"><div id="p1-stamina" class="stamina-bar"></div></div>
+            <div id="p1-dist" class="progress-text">0m / 1000m</div>
         </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="glass rounded-2xl p-4 flex flex-col gap-2">
-        <button id="resign-btn" onclick="resign()" disabled
-          class="btn bg-rose-600/80 hover:bg-rose-600 text-xs font-bold py-2.5 rounded-xl w-full">
-          🏳️ Menyerah
-        </button>
-        <button onclick="flipBoard()" class="btn bg-slate-700/80 hover:bg-slate-600 text-xs font-bold py-2.5 rounded-xl w-full">
-          🔃 Putar Papan
-        </button>
-        <button onclick="resetAll()" class="btn bg-slate-800 hover:bg-slate-700 text-xs font-bold py-2.5 rounded-xl w-full border border-slate-700/50">
-          🔄 Reset Semua
-        </button>
-      </div>
+        <div style="text-align: right;">
+            <div style="color:#e74c3c">PLAYER 2 (RIVAL)</div>
+            <div class="bar-container"><div id="p2-stamina" class="stamina-bar" style="background:#e74c3c"></div></div>
+            <div id="p2-dist" class="progress-text">0m / 1000m</div>
+        </div>
     </div>
-  </div>
+
+    <!-- MENU UTAMA -->
+    <div id="menu-screen" class="ui-layer interactive">
+        <h1>🏰 PIXEL KINGDOM RUN 🏰</h1>
+        <p>Lomba lari multiplayer P2P.<br>Gunakan Arrow Keys (Kiri/Kanan) bergantian untuk lari.</p>
+        
+        <div id="connection-status">Menghubungkan ke server peer...</div>
+        
+        <div id="lobby-controls" class="hidden">
+            <p>ID Kamu: <span id="my-id" style="color:#f1c40f">...</span></p>
+            <input type="text" id="friend-id" placeholder="MASUKKAN ID TEMAN">
+            <br>
+            <button onclick="joinGame()">GABUNG PERTANDINGAN</button>
+            <p style="font-size: 10px; color: #aaa;">Atau bagikan ID kamu ke teman untuk di-invite</p>
+        </div>
+    </div>
+
+    <!-- MODAL TERIMA INVITE -->
+    <div id="invite-modal" class="ui-layer interactive hidden">
+        <h1 style="color: #e74c3c">⚔️ TANTANGAN DITERIMA!</h1>
+        <p>Seseorang menantangmu lari!</p>
+        <p>Dari ID: <span id="challenger-id"></span></p>
+        <button onclick="acceptChallenge()">TERIMA TANTANGAN</button>
+        <button class="secondary" onclick="rejectChallenge()">TOLAK</button>
+    </div>
+
+    <!-- COUNTDOWN -->
+    <div id="countdown-screen" class="ui-layer hidden">
+        <h1 id="countdown-text" style="font-size: 60px;">3</h1>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="result-screen" class="ui-layer interactive hidden">
+        <h1 id="winner-text">MENANG!</h1>
+        <button onclick="location.reload()">MAIN LAGI</button>
+    </div>
 </div>
 
 <script>
-// ===================== STATE =====================
-let board = null;
-let game = new Chess();
-let peer = null;
-let conn = null;
-let myRole = null;       // 'white' | 'black'
+/**
+ * KONFIGURASI GAME & VARIABEL GLOBAL
+ */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const FINISH_LINE = 2000; // Jarak finish dalam satuan pixel logic
+
+// State Game
+let gameState = 'MENU'; // MENU, WAITING, COUNTDOWN, PLAYING, END
+let isHost = false;
 let myPeerId = null;
-let isConnected = false;
-let gameActive = false;
-let moveCount = 0;
-let lastMoveSquares = [];
-let pendingPromotion = null;
-
-// ===================== TOAST =====================
-function toast(msg, type = 'info') {
-  const box = document.getElementById('toast-box');
-  const t = document.createElement('div');
-  t.className = `toast toast-${type}`;
-  t.textContent = msg;
-  box.appendChild(t);
-  setTimeout(() => t.remove(), 3800);
-}
-
-// ===================== SOUND =====================
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let audioCtx = null;
-function playSound(freq, dur, type = 'sine') {
-  try {
-    if (!audioCtx) audioCtx = new AudioCtx();
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.type = type;
-    o.frequency.value = freq;
-    g.gain.setValueAtTime(0.08, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(); o.stop(audioCtx.currentTime + dur);
-  } catch(e) {}
-}
-function sndMove()    { playSound(600, 0.08); }
-function sndCapture() { playSound(350, 0.12, 'square'); }
-function sndCheck()   { playSound(880, 0.2, 'triangle'); }
-function sndEnd()     { playSound(523, 0.15); setTimeout(()=>playSound(659,0.15),150); setTimeout(()=>playSound(784,0.3),300); }
-
-// ===================== PEER JS =====================
-function initPeer() {
-  peer = new Peer();
-
-  peer.on('open', (id) => {
-    myPeerId = id;
-    document.getElementById('my-id').textContent = id;
-    document.getElementById('status-dot').className = 'dot dot-on';
-    setStatus('✅ Siap! Bagikan ID kamu atau tantang lawan.');
-  });
-
-  peer.on('connection', (connection) => {
-    if (conn && isConnected) {
-      connection.close();
-      toast('Sudah ada lawan terhubung!', 'warn');
-      return;
-    }
-    conn = connection;
-    myRole = 'white';
-    setupConnection();
-  });
-
-  peer.on('error', (err) => {
-    console.error('PeerJS Error:', err);
-    document.getElementById('status-dot').className = 'dot dot-off';
-    if (err.type === 'peer-unavailable') {
-      toast('❌ ID lawan tidak ditemukan!', 'err');
-      setStatus('ID lawan tidak valid. Coba lagi.');
-      resetConnUI();
-    } else if (err.type === 'unavailable-id') {
-      toast('ID bentrok, coba reload halaman.', 'err');
-    } else {
-      toast('Koneksi error: ' + err.type, 'err');
-    }
-  });
-
-  peer.on('disconnected', () => {
-    document.getElementById('status-dot').className = 'dot dot-off';
-    setStatus('⚠️ Terputus dari server. Mencoba sambung ulang...');
-    setTimeout(() => { if (peer && !peer.destroyed) peer.reconnect(); }, 2000);
-  });
-}
-
-function connectToPeer() {
-  const targetId = document.getElementById('peer-id-input').value.trim();
-  if (!targetId) { toast('Masukkan ID lawan dulu!', 'warn'); return; }
-  if (targetId === myPeerId) { toast('Tidak bisa tantang diri sendiri! 😅', 'warn'); return; }
-  if (isConnected) { toast('Sudah terhubung dengan lawan!', 'warn'); return; }
-
-  setStatus('⏳ Menghubungkan ke lawan...');
-  document.getElementById('status-dot').className = 'dot dot-wait';
-  document.getElementById('connect-btn').disabled = true;
-
-  conn = peer.connect(targetId, { reliable: true });
-  myRole = 'black';
-  setupConnection();
-}
-
-function setupConnection() {
-  conn.on('open', () => {
-    isConnected = true;
-    gameActive = true;
-    document.getElementById('status-dot').className = 'dot dot-on';
-    document.getElementById('connection-panel').style.opacity = '0.5';
-    document.getElementById('connection-panel').style.pointerEvents = 'none';
-    document.getElementById('resign-btn').disabled = false;
-    document.getElementById('connect-btn').disabled = true;
-
-    const roleText = myRole === 'white' ? 'PUTIH ♔' : 'HITAM ♚';
-    setStatus(`🎮 Terhubung! Kamu bermain sebagai ${roleText}`);
-    toast(`Lawan terhubung! Kamu ${roleText}`, 'ok');
-    sndEnd();
-    updateLabels();
-    updateTurnIndicator();
-  });
-
-  conn.on('data', (data) => {
-    switch (data.type) {
-      case 'move':
-        handleRemoteMove(data);
-        break;
-      case 'resign':
-        handleRemoteResign();
-        break;
-      case 'rematch-request':
-        document.getElementById('rematch-modal').style.display = 'flex';
-        playSound(700, 0.2, 'triangle');
-        break;
-      case 'rematch-accept':
-        doRematch();
-        toast('Rematch diterima! ♟️', 'ok');
-        break;
-      case 'rematch-decline':
-        toast('Lawan menolak rematch.', 'warn');
-        break;
-    }
-  });
-
-  conn.on('close', () => {
-    if (!isConnected) {
-      resetConnUI();
-      return;
-    }
-    isConnected = false;
-    gameActive = false;
-    toast('⚡ Lawan memutuskan koneksi.', 'err');
-    setStatus('Lawan keluar. Refresh untuk main lagi.');
-    document.getElementById('status-dot').className = 'dot dot-off';
-    document.getElementById('resign-btn').disabled = true;
-    playSound(200, 0.3, 'sawtooth');
-  });
-}
-
-function resetConnUI() {
-  document.getElementById('connect-btn').disabled = false;
-  document.getElementById('status-dot').className = 'dot dot-on';
-  setStatus('Siap! Masukkan ID lawan untuk bermain.');
-}
-
-// ===================== GAME LOGIC =====================
-function onDragStart(source, piece) {
-  if (!gameActive || game.game_over()) return false;
-  if (!isConnected) return false;
-
-  const myColor = myRole === 'white' ? 'w' : 'b';
-  if (game.turn() !== myColor) return false;
-  if (piece[0] !== myColor) return false;
-  return true;
-}
-
-function onDrop(source, target) {
-  const piece = game.get(source);
-
-  // Check promotion
-  if (piece && piece.type === 'p') {
-    if ((piece.color === 'w' && target[1] === '8') || (piece.color === 'b' && target[1] === '1')) {
-      pendingPromotion = { from: source, to: target };
-      showPromotionModal(piece.color);
-      return 'snapback';
-    }
-  }
-
-  const move = game.move({ from: source, to: target });
-  if (!move) return 'snapback';
-
-  afterLocalMove(move, source, target);
-}
-
-function afterLocalMove(move, from, to, promotion) {
-  // Send to opponent
-  if (conn && conn.open) {
-    conn.send({ type: 'move', from, to, promotion: promotion || null });
-  }
-
-  move.captured ? sndCapture() : sndMove();
-  if (game.in_check()) sndCheck();
-
-  highlightLastMove(from, to);
-  updateMoveHistory(move);
-  updateCapturedPieces();
-  updateTurnIndicator();
-  checkGameEnd();
-}
-
-function handleRemoteMove(data) {
-  const moveObj = { from: data.from, to: data.to };
-  if (data.promotion) moveObj.promotion = data.promotion;
-
-  const move = game.move(moveObj);
-  if (!move) return;
-
-  board.position(game.fen());
-  move.captured ? sndCapture() : sndMove();
-  if (game.in_check()) sndCheck();
-
-  highlightLastMove(data.from, data.to);
-  updateMoveHistory(move);
-  updateCapturedPieces();
-  updateTurnIndicator();
-  checkGameEnd();
-}
-
-function showPromotionModal(color) {
-  const modal = document.getElementById('promo-modal');
-  const opts = document.getElementById('promo-options');
-  const pieces = color === 'w' ? ['♕','♖','♗','♘'] : ['♛','♜','♝','♞'];
-  const codes = ['q','r','b','n'];
-
-  opts.innerHTML = '';
-  codes.forEach((c, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'promo-btn';
-    btn.textContent = pieces[i];
-    btn.onclick = () => {
-      modal.style.display = 'none';
-      const p = pendingPromotion;
-      pendingPromotion = null;
-      const move = game.move({ from: p.from, to: p.to, promotion: c });
-      if (move) {
-        board.position(game.fen());
-        afterLocalMove(move, p.from, p.to, c);
-      }
-    };
-    opts.appendChild(btn);
-  });
-  modal.style.display = 'flex';
-}
-
-// ===================== GAME END =====================
-function checkGameEnd() {
-  if (!game.game_over()) return;
-
-  gameActive = false;
-  document.getElementById('resign-btn').disabled = true;
-  sndEnd();
-
-  let title, desc, icon;
-
-  if (game.in_checkmate()) {
-    const winner = game.turn() === 'w' ? 'Hitam' : 'Putih';
-    const iWon = (game.turn() === 'w' && myRole === 'black') || (game.turn() === 'b' && myRole === 'white');
-    icon = iWon ? '🏆' : '💀';
-    title = 'Skakmat!';
-    desc = iWon ? `Kamu MENANG sebagai ${myRole === 'white' ? 'Putih' : 'Hitam'}!` : `${winner} memenangkan permainan.`;
-  } else if (game.in_stalemate()) {
-    icon = '🤝'; title = 'Stalemate!'; desc = 'Permainan berakhir seri.';
-  } else if (game.in_threefold_repetition()) {
-    icon = '🔁'; title = 'Remis!'; desc = 'Pengulangan posisi 3x.';
-  } else if (game.insufficient_material()) {
-    icon = '🤝'; title = 'Remis!'; desc = 'Materi tidak cukup untuk skakmat.';
-  } else if (game.in_draw()) {
-    icon = '🤝'; title = 'Remis!'; desc = 'Permainan berakhir seri.';
-  }
-
-  document.getElementById('go-icon').textContent = icon;
-  document.getElementById('go-title').textContent = title;
-  document.getElementById('go-desc').textContent = desc;
-  document.getElementById('gameover-modal').style.display = 'flex';
-  setStatus(`🏁 ${title} — ${desc}`);
-}
-
-function resign() {
-  if (!gameActive || !isConnected) return;
-  if (!confirm('Yakin mau menyerah?')) return;
-
-  gameActive = false;
-  if (conn && conn.open) conn.send({ type: 'resign' });
-
-  document.getElementById('go-icon').textContent = '🏳️';
-  document.getElementById('go-title').textContent = 'Kamu Menyerah';
-  document.getElementById('go-desc').textContent = 'Lawan memenangkan permainan.';
-  document.getElementById('gameover-modal').style.display = 'flex';
-  setStatus('🏳️ Kamu menyerah.');
-  document.getElementById('resign-btn').disabled = true;
-}
-
-function handleRemoteResign() {
-  gameActive = false;
-  document.getElementById('go-icon').textContent = '🏆';
-  document.getElementById('go-title').textContent = 'Lawan Menyerah!';
-  document.getElementById('go-desc').textContent = 'Kamu memenangkan permainan! 🎉';
-  document.getElementById('gameover-modal').style.display = 'flex';
-  setStatus('🏆 Lawan menyerah! Kamu menang!');
-  document.getElementById('resign-btn').disabled = true;
-  sndEnd();
-}
-
-// ===================== REMATCH =====================
-function requestRematch() {
-  closeGameOver();
-  if (conn && conn.open) {
-    conn.send({ type: 'rematch-request' });
-    toast('Permintaan rematch dikirim...', 'info');
-    setStatus('⏳ Menunggu jawaban rematch dari lawan...');
-  }
-}
-
-function acceptRematch() {
-  document.getElementById('rematch-modal').style.display = 'none';
-  if (conn && conn.open) conn.send({ type: 'rematch-accept' });
-  doRematch();
-}
-
-function declineRematch() {
-  document.getElementById('rematch-modal').style.display = 'none';
-  if (conn && conn.open) conn.send({ type: 'rematch-decline' });
-  toast('Rematch ditolak.', 'info');
-}
-
-function doRematch() {
-  // Swap colors
-  myRole = myRole === 'white' ? 'black' : 'white';
-  game = new Chess();
-  gameActive = true;
-  moveCount = 0;
-  lastMoveSquares = [];
-
-  board.position('start');
-  board.orientation(myRole === 'white' ? 'white' : 'black');
-
-  document.getElementById('move-history').innerHTML = '<p class="text-slate-600 italic text-xs p-3 text-center">Belum ada langkah...</p>';
-  document.getElementById('captured-top').innerHTML = '';
-  document.getElementById('captured-bottom').innerHTML = '';
-  document.getElementById('resign-btn').disabled = false;
-
-  clearHighlights();
-  updateLabels();
-  updateTurnIndicator();
-  setStatus(`🔄 Rematch! Kamu sekarang ${myRole === 'white' ? 'PUTIH ♔' : 'HITAM ♚'}`);
-  toast('Rematch dimulai! Warna ditukar. 🔄', 'ok');
-  sndEnd();
-}
-
-function closeGameOver() {
-  document.getElementById('gameover-modal').style.display = 'none';
-}
-
-// ===================== UI HELPERS =====================
-function setStatus(text) {
-  document.getElementById('status-bar').innerHTML = text;
-}
-
-function updateLabels() {
-  const oppColor = myRole === 'white' ? 'Hitam ♚' : 'Putih ♔';
-  const myColor = myRole === 'white' ? 'Putih ♔' : 'Hitam ♚';
-  document.getElementById('opp-label').textContent = `Lawan (${oppColor})`;
-  document.getElementById('my-label').textContent = `Kamu (${myColor})`;
-}
-
-function updateTurnIndicator() {
-  const el = document.getElementById('turn-indicator');
-  if (!gameActive) { el.style.display = 'none'; return; }
-
-  el.style.display = 'inline-block';
-  const isWhiteTurn = game.turn() === 'w';
-  const isMyTurn = (game.turn() === 'w' && myRole === 'white') || (game.turn() === 'b' && myRole === 'black');
-
-  el.className = `turn-badge ${isWhiteTurn ? 'turn-white' : 'turn-black'} ${isMyTurn ? 'turn-you' : ''}`;
-  el.textContent = isMyTurn
-    ? `${isWhiteTurn ? '♔ PUTIH' : '♚ HITAM'} — Giliranmu!`
-    : `${isWhiteTurn ? '♔ PUTIH' : '♚ HITAM'} — Giliran lawan`;
-}
-
-function highlightLastMove(from, to) {
-  clearHighlights();
-  lastMoveSquares = [from, to];
-  const boardEl = document.getElementById('board');
-  const squares = boardEl.querySelectorAll('.square-55d63');
-  squares.forEach(sq => {
-    const sqName = sq.getAttribute('data-square');
-    if (sqName === from || sqName === to) {
-      sq.classList.add('highlight-move');
-    }
-  });
-
-  // Highlight king if in check
-  if (game.in_check()) {
-    const turn = game.turn();
-    const boardArr = game.board();
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        const p = boardArr[r][c];
-        if (p && p.type === 'k' && p.color === turn) {
-          const file = 'abcdefgh'[c];
-          const rank = 8 - r;
-          const kingSq = file + rank;
-          squares.forEach(sq => {
-            if (sq.getAttribute('data-square') === kingSq) {
-              sq.classList.add('highlight-check');
-            }
-          });
-        }
-      }
-    }
-  }
-}
-
-function clearHighlights() {
-  document.querySelectorAll('.highlight-move, .highlight-check').forEach(el => {
-    el.classList.remove('highlight-move', 'highlight-check');
-  });
-}
-
-function updateMoveHistory(move) {
-  const container = document.getElementById('move-history');
-
-  // Remove placeholder
-  if (moveCount === 0) container.innerHTML = '';
-
-  if (move.color === 'w') {
-    moveCount++;
-    const row = document.createElement('div');
-    row.className = 'move-row';
-    row.id = `move-row-${moveCount}`;
-    row.innerHTML = `
-      <span class="move-num">${moveCount}.</span>
-      <span class="move-w" id="mv-w-${moveCount}">${move.san}</span>
-      <span class="move-b" id="mv-b-${moveCount}"></span>
-    `;
-    container.appendChild(row);
-  } else {
-    const el = document.getElementById(`mv-b-${moveCount}`);
-    if (el) el.textContent = move.san;
-  }
-
-  container.scrollTop = container.scrollHeight;
-}
-
-function updateCapturedPieces() {
-  const unicodeMap = {
-    'wp':'♙','wn':'♘','wb':'♗','wr':'♖','wq':'♕',
-    'bp':'♟','bn':'♞','bb':'♝','br':'♜','bq':'♛'
-  };
-
-  const myColor = myRole === 'white' ? 'w' : 'b';
-  const oppColor = myRole === 'white' ? 'b' : 'w';
-
-  let myCaptured = [];   // pieces I captured (opponent's pieces)
-  let oppCaptured = [];  // pieces opponent captured (my pieces)
-
-  const history = game.history({ verbose: true });
-  history.forEach(m => {
-    if (m.captured) {
-      const capturedCode = m.color + m.captured;
-      if (m.color === myColor) {
-        myCaptured.push(unicodeMap[oppColor + m.captured] || '?');
-      } else {
-        oppCaptured.push(unicodeMap[myColor + m.captured] || '?');
-      }
-    }
-  });
-
-  document.getElementById('captured-top').textContent = oppCaptured.join(' ');
-  document.getElementById('captured-bottom').textContent = myCaptured.join(' ');
-}
-
-function copyMyId() {
-  const id = document.getElementById('my-id').textContent;
-  if (!id || id === 'Menghubungkan...') { toast('ID belum siap!', 'warn'); return; }
-  navigator.clipboard.writeText(id).then(() => {
-    toast('ID disalin! 📋', 'ok');
-  }).catch(() => {
-    // Fallback
-    const ta = document.createElement('textarea');
-    ta.value = id; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta);
-    toast('ID disalin! 📋', 'ok');
-  });
-}
-
-function flipBoard() {
-  board.flip();
-}
-
-function resetAll() {
-  if (isConnected && !confirm('Yakin mau reset? Koneksi akan terputus.')) return;
-  location.reload();
-}
-
-// ===================== INIT =====================
-function onSnapEnd() {
-  board.position(game.fen());
-}
-
-$(document).ready(() => {
-  board = Chessboard('board', {
-    draggable: true,
-    position: 'start',
-    onDragStart: onDragStart,
-    onDrop: onDrop,
-    onSnapEnd: onSnapEnd,
-    pieceTheme: 'https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/img/chesspieces/wikipedia/{piece}.png'
-  });
-
-  initPeer();
-
-  $(window).resize(() => board.resize());
+let conn = null;
+let pendingConn = null; // Untuk menyimpan koneksi yang masuk sebelum diterima
+
+// Data Pemain
+const player1 = { x: 100, y: 300, color: '#3498db', stamina: 100, distance: 0, frame: 0, speed: 0, lastKey: null };
+const player2 = { x: 100, y: 330, color: '#e74c3c', stamina: 100, distance: 0, frame: 0, speed: 0, lastKey: null };
+
+// Aset Pixel Art (Digambar via code agar ringan)
+const sprites = {
+    castle: null,
+    tree: null,
+    grass: null
+};
+
+/**
+ * SETUP PEERJS (NETWORKING)
+ */
+const peer = new Peer(null, {
+    debug: 2
 });
+
+peer.on('open', (id) => {
+    myPeerId = id;
+    document.getElementById('my-id').innerText = id;
+    document.getElementById('connection-status').innerText = "Siap! Bagikan ID-mu.";
+    document.getElementById('lobby-controls').classList.remove('hidden');
+});
+
+peer.on('connection', (connection) => {
+    if (gameState !== 'MENU') {
+        connection.close(); // Tolak jika sudah main
+        return;
+    }
+    
+    // Jika kita tamu, kita langsung connect. Jika host, kita tunggu approval UI
+    // Logika sederhana: Siapa yang klik "Gabung" duluan yang inisiasi data
+    
+    pendingConn = connection;
+    
+    // Tampilkan UI Terima/Tolak
+    document.getElementById('invite-modal').classList.remove('hidden');
+    document.getElementById('challenger-id').innerText = connection.peer;
+});
+
+function joinGame() {
+    const friendId = document.getElementById('friend-id').value.trim();
+    if (!friendId) return alert("Masukkan ID teman!");
+    
+    conn = peer.connect(friendId);
+    setupConnection(conn);
+    
+    // Tunggu sebentar, jika tidak tersambung
+    setTimeout(() => {
+        if(gameState === 'MENU') {
+            alert("Gagal terhubung atau teman menolak.");
+        }
+    }, 5000);
+}
+
+function acceptChallenge() {
+    conn = pendingConn;
+    setupConnection(conn);
+    document.getElementById('invite-modal').classList.add('hidden');
+}
+
+function rejectChallenge() {
+    if(pendingConn) pendingConn.close();
+    document.getElementById('invite-modal').classList.add('hidden');
+}
+
+function setupConnection(connection) {
+    connection.on('open', () => {
+        console.log("Terhubung!");
+        startCountdown();
+    });
+
+    connection.on('data', (data) => {
+        handleNetworkData(data);
+    });
+    
+    connection.on('close', () => {
+        alert("Lawan terputus!");
+        location.reload();
+    });
+}
+
+function handleNetworkData(data) {
+    if (data.type === 'UPDATE') {
+        // Update posisi lawan (Player 2 bagi kita adalah Player 1 bagi mereka)
+        player2.distance = data.distance;
+        player2.stamina = data.stamina;
+        player2.frame = data.frame;
+        player2.speed = data.speed;
+        
+        checkWinCondition();
+    } else if (data.type === 'START') {
+        gameState = 'PLAYING';
+        document.getElementById('countdown-screen').classList.add('hidden');
+        document.getElementById('hud').classList.remove('hidden');
+    } else if (data.type === 'FINISH') {
+        endGame(false); // Kita kalah
+    }
+}
+
+function sendData() {
+    if (conn && conn.open) {
+        conn.send({
+            type: 'UPDATE',
+            distance: player1.distance,
+            stamina: player1.stamina,
+            frame: player1.frame,
+            speed: player1.speed
+        });
+    }
+}
+
+/**
+ * LOGIKA GAME
+ */
+function startCountdown() {
+    gameState = 'COUNTDOWN';
+    document.getElementById('menu-screen').classList.add('hidden');
+    document.getElementById('countdown-screen').classList.remove('hidden');
+    
+    let count = 3;
+    const timer = setInterval(() => {
+        document.getElementById('countdown-text').innerText = count;
+        if (count === 0) {
+            clearInterval(timer);
+            document.getElementById('countdown-text').innerText = "LARI!";
+            
+            // Sinkronisasi start
+            if(conn && conn.open) conn.send({ type: 'START' });
+            
+            setTimeout(() => {
+                gameState = 'PLAYING';
+                document.getElementById('countdown-screen').classList.add('hidden');
+                document.getElementById('hud').classList.remove('hidden');
+            }, 800);
+        }
+        count--;
+    }, 1000);
+}
+
+// Input Handling
+window.addEventListener('keydown', (e) => {
+    if (gameState !== 'PLAYING') return;
+
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        // Mekanik Lari: Harus ganti-ganti tombol
+        const requiredKey = player1.lastKey === 'ArrowLeft' ? 'ArrowRight' : 'ArrowLeft';
+        
+        if (e.key === requiredKey || player1.lastKey === null) {
+            // Input Benar
+            if (player1.stamina > 10) {
+                player1.speed += 1.5; // Boost kecepatan
+                player1.stamina -= 5; // Kurangi stamina
+                player1.frame++; // Animasi jalan
+                player1.lastKey = e.key;
+            } else {
+                // Stamina habis, penalty
+                player1.speed *= 0.5; 
+            }
+        } else {
+            // Input Salah (spam tombol sama), penalty kecil
+            player1.speed *= 0.9;
+        }
+    }
+});
+
+function updatePhysics() {
+    if (gameState !== 'PLAYING') return;
+
+    // Player 1 Logic
+    // Gesekan udara/tanah (melambat perlahan)
+    player1.speed *= 0.96; 
+    // Regenerasi stamina saat pelan
+    if (player1.speed < 2 && player1.stamina < 100) player1.stamina += 0.5;
+    
+    player1.distance += player1.speed;
+
+    // Kirim data ke lawan
+    sendData();
+    
+    // Cek Menang
+    if (player1.distance >= FINISH_LINE) {
+        if(conn && conn.open) conn.send({ type: 'FINISH' });
+        endGame(true);
+    }
+
+    // Update UI Bars
+    document.getElementById('p1-stamina').style.width = player1.stamina + '%';
+    document.getElementById('p1-dist').innerText = Math.floor(player1.distance/2) + 'm';
+    document.getElementById('p2-stamina').style.width = player2.stamina + '%';
+    document.getElementById('p2-dist').innerText = Math.floor(player2.distance/2) + 'm';
+}
+
+function checkWinCondition() {
+    if (player2.distance >= FINISH_LINE) {
+        endGame(false);
+    }
+}
+
+function endGame(iWon) {
+    gameState = 'END';
+    document.getElementById('result-screen').classList.remove('hidden');
+    const title = document.getElementById('winner-text');
+    if (iWon) {
+        title.innerText = "🏆 KAMU MENANG! 🏆";
+        title.style.color = "#f1c40f";
+    } else {
+        title.innerText = "💀 KAMU KALAH... 💀";
+        title.style.color = "#e74c3c";
+    }
+}
+
+/**
+ * RENDERING (GRAFIK PIXEL)
+ */
+function drawPixelChar(x, y, color, frame) {
+    ctx.fillStyle = color;
+    // Badan
+    ctx.fillRect(x, y - 20, 12, 20);
+    // Kepala
+    ctx.fillStyle = '#ffccaa'; // Kulit
+    ctx.fillRect(x + 2, y - 28, 8, 8);
+    
+    // Kaki (Animasi sederhana berdasarkan frame)
+    ctx.fillStyle = '#333';
+    if (frame % 2 === 0) {
+        ctx.fillRect(x + 2, y, 4, 8); // Kaki kiri
+    } else {
+        ctx.fillRect(x + 6, y, 4, 8); // Kaki kanan
+    }
+}
+
+function drawBackground(offset) {
+    // Langit
+    ctx.fillStyle = '#87CEEB';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Matahari
+    ctx.fillStyle = '#FDB813';
+    ctx.fillRect(700, 50, 40, 40);
+
+    // Gunung (Parallax lambat)
+    ctx.fillStyle = '#5D6D7E';
+    const mtnOffset = (offset * 0.1) % 800;
+    for(let i=0; i<3; i++) {
+        let mx = (i * 400) - mtnOffset;
+        ctx.beginPath();
+        ctx.moveTo(mx, 350);
+        ctx.lineTo(mx + 200, 150);
+        ctx.lineTo(mx + 400, 350);
+        ctx.fill();
+    }
+
+    // Kastil Kerajaan (Background tengah)
+    ctx.fillStyle = '#95a5a6';
+    const castleOffset = (offset * 0.3) % 1000;
+    ctx.fillRect(200 - castleOffset, 200, 100, 150); // Menara
+    ctx.fillRect(220 - castleOffset, 180, 60, 20); // Atap
+    // Bendera
+    ctx.fillStyle = '#e74c3c';
+    ctx.fillRect(245 - castleOffset, 150, 30, 20);
+
+    // Tanah & Rumput (Foreground cepat)
+    ctx.fillStyle = '#27ae60'; // Rumput
+    ctx.fillRect(0, 350, canvas.width, 100);
+    
+    // Detail tanah (pixel grid effect)
+    ctx.fillStyle = '#2ecc71';
+    const groundOffset = offset % 40;
+    for(let i=0; i<25; i++) {
+        ctx.fillRect((i*40) - groundOffset, 360, 20, 10);
+        ctx.fillRect((i*40) - groundOffset + 20, 390, 20, 10);
+    }
+    
+    // Pohon Pedesaan
+    const treeOffset = (offset * 1.2) % 600;
+    ctx.fillStyle = '#8B4513'; // Batang
+    ctx.fillRect(500 - treeOffset, 310, 20, 40);
+    ctx.fillStyle = '#228B22'; // Daun
+    ctx.fillRect(480 - treeOffset, 270, 60, 40);
+}
+
+function gameLoop() {
+    // Clear
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Hitung offset kamera berdasarkan pemain terdepan (atau rata-rata)
+    // Agar kamera mengikuti aksi
+    const camX = Math.max(player1.distance, player2.distance) - 100;
+    
+    drawBackground(camX);
+
+    // Gambar Finish Line
+    const finishScreenX = FINISH_LINE - camX + 100; // +100 karena start player di x=100
+    if (finishScreenX < 800) {
+        ctx.fillStyle = '#FFF';
+        for(let i=0; i<10; i++) {
+            ctx.fillRect(finishScreenX, 250 + (i*20), 20, 20);
+            ctx.fillStyle = ctx.fillStyle === '#FFF' ? '#000' : '#FFF';
+        }
+    }
+
+    // Gambar Pemain
+    // Posisi layar = Posisi dunia - Kamera + Offset Awal
+    const p1ScreenX = player1.distance - camX + 100;
+    const p2ScreenX = player2.distance - camX + 100;
+
+    drawPixelChar(p1ScreenX, 350, player1.color, Math.floor(player1.frame));
+    drawPixelChar(p2ScreenX, 350, player2.color, Math.floor(player2.frame));
+
+    updatePhysics();
+    requestAnimationFrame(gameLoop);
+}
+
+// Mulai Loop Render
+gameLoop();
+
 </script>
 </body>
 </html>
