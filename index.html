@@ -130,7 +130,7 @@
   .ring::before{content:''; position:absolute; inset:-6px; border-radius:50%; border:2px solid rgba(255,62,200,.25); animation:ringPulse 1.6s ease-out infinite;}
   @keyframes ringPulse{0%{transform:scale(.9); opacity:1;}100%{transform:scale(1.5); opacity:0;}}
 
-
+  
   .promo-grid{display:flex; gap:10px; justify-content:center; margin-top:6px;}
   .promo-opt{width:56px; height:56px; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid var(--glass-border);
     display:flex; align-items:center; justify-content:center; font-size:30px; cursor:pointer; transition:.15s;}
@@ -164,8 +164,8 @@
     font-size:clamp(16px,6.2vw,26px); border-radius:4px; -webkit-user-select:none; user-select:none;
     transition:background .12s;
   }
-  .cell.light{background:rgba(255,255,255,.075);}
-  .cell.dark{background:rgba(6,4,20,.62);}
+  .cell.light{background:#eeece4;}
+  .cell.dark{background:#17161c;}
   .cell.fillable:hover{filter:brightness(1.3);}
   .cell.selected{box-shadow:inset 0 0 0 2px var(--cyan), 0 0 12px rgba(42,247,221,.6);}
   .cell.legal::after{content:''; position:absolute; width:24%; height:24%; border-radius:50%; background:rgba(255,255,255,.5); box-shadow:0 0 8px rgba(255,255,255,.5);}
@@ -216,7 +216,7 @@
   </div>
   <div class="tagline">Catur Neon · Peer to Peer</div>
 
-  <!-- LOBBY SCREEN -->
+  
   <div id="lobbyScreen" style="width:100%;">
 
     <div class="glass panel">
@@ -227,7 +227,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
         </button>
       </div>
-      <div class="hint">Bagikan ID ini ke lawan kamu supaya mereka bisa mengundangmu bermain.</div>
+      <div class="hint">ID ini permanen untuk perangkat ini. Bagikan ke lawan kamu supaya mereka bisa mengundangmu bermain.</div>
       <button class="btn outline retry-btn" id="retryBtn">Coba Sambungkan Ulang</button>
     </div>
 
@@ -242,7 +242,7 @@
 
   </div>
 
- 
+  
   <div id="gameScreen" hidden style="width:100%;">
     <div class="glass game-header">
       <div class="player-tag">
@@ -277,7 +277,7 @@
   <div class="footer-note">Koneksi langsung antar perangkat via WebRTC (PeerJS)</div>
 </div>
 
-
+<!-- Incoming invite modal -->
 <div class="modal-overlay" id="inviteModal">
   <div class="glass modal-card">
     <div class="ring">
@@ -293,7 +293,7 @@
   </div>
 </div>
 
-
+<!-- Promotion picker modal -->
 <div class="modal-overlay" id="promoModal">
   <div class="glass modal-card">
     <div class="modal-eyebrow">Promosi Pion</div>
@@ -344,7 +344,7 @@
         if(typeof Peer === 'undefined'){
           fatalConnectionError('Library koneksi gagal dimuat. Periksa koneksi internet lalu coba lagi.');
           return;
- }
+       }
         startApp();
       })
       .catch(function(){
@@ -640,7 +640,7 @@
   var selLegal = [];
   var gameOver = false;
   var lastMove = null;
-  var pendingPromo = null;
+  var pendingPromo = null; // {from,to}
   var capturedByMe = [];
   var capturedByOpp = [];
 
@@ -678,11 +678,29 @@
   var toastEl = $('toast');
 
   var ID_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  var STORAGE_KEY = 'edward_arena_peer_id';
   function generateId(len){
     len = len || 5;
     var s = '';
     for(var i=0;i<len;i++) s += ID_CHARS[Math.floor(Math.random()*ID_CHARS.length)];
     return s;
+  }
+  function getSavedId(){
+    try{
+      var saved = localStorage.getItem(STORAGE_KEY);
+      if(saved && /^[A-Z0-9]{4,12}$/.test(saved)) return saved;
+    }catch(e){}
+    return null;
+  }
+  function saveId(id){
+    try{ localStorage.setItem(STORAGE_KEY, id); }catch(e){}
+  }
+  function getOrCreateId(){
+    var saved = getSavedId();
+    if(saved) return saved;
+    var id = generateId();
+    saveId(id);
+    return id;
   }
 
   var toastTimer = null;
@@ -702,8 +720,8 @@
   var openTimeoutHandle = null;
   var idRetries = 0;
 
-  function initPeer(){
-    var id = generateId();
+  function initPeer(forceId){
+    var id = forceId || getOrCreateId();
     if(peer){ try{ peer.destroy(); }catch(e){} }
 
     myIdValue.textContent = 'Menghubungkan…';
@@ -755,7 +773,12 @@
     peer.on('error', function(err){
       if(err && err.type === 'unavailable-id'){
         idRetries++;
-        if(idRetries < 8){ initPeer(); return; }
+        if(idRetries < 8){
+          var freshId = generateId();
+          saveId(freshId);
+          initPeer(freshId);
+          return;
+        }
         fatalConnectionError('Gagal membuat ID unik. Coba lagi.');
         return;
       }
@@ -930,7 +953,6 @@
     renderCaptured();
   }
 
- 
   function renderCaptured(){
     myCapturedEl.innerHTML = capturedByMe.map(function(p){ return '<span class="piece '+p[0]+'">'+PIECE_GLYPH[p]+'</span>'; }).join('');
     oppCapturedEl.innerHTML = capturedByOpp.map(function(p){ return '<span class="piece '+p[0]+'">'+PIECE_GLYPH[p]+'</span>'; }).join('');
