@@ -2,15 +2,19 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tag ini WAJIB agar responsif di HP -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pixel Kingdom Run - Multiplayer</title>
     <!-- Import PeerJS -->
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <!-- Font Pixel -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; touch-action: manipulation; } /* Mencegah zoom saat double tap di HP */
+        
         body {
             margin: 0;
+            padding: 0;
             overflow: hidden;
             background-color: #2c3e50;
             font-family: 'Press Start 2P', cursive;
@@ -19,20 +23,24 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            width: 100vw;
         }
 
         #game-container {
             position: relative;
-            width: 800px;
-            height: 450px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            border: 4px solid #fff;
+            width: 100%;
+            height: 100%;
+            max-width: 1000px; /* Batas maksimal lebar di PC */
+            background-color: #87CEEB;
+            display: flex;
+            flex-direction: column;
         }
 
         canvas {
             display: block;
-            image-rendering: pixelated; /* Agar pixel art tajam */
-            background-color: #87CEEB; /* Warna langit */
+            width: 100%;
+            flex-grow: 1; /* Canvas mengisi sisa ruang */
+            image-rendering: pixelated; 
         }
 
         /* UI Overlay */
@@ -46,38 +54,46 @@
             align-items: center;
             text-align: center;
             text-shadow: 2px 2px #000;
+            padding: 20px;
         }
 
         .interactive {
             pointer-events: auto;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 2px solid white;
+            width: 90%;
+            max-width: 400px;
         }
 
-        h1 { font-size: 24px; color: #f1c40f; margin-bottom: 20px; }
-        p { font-size: 12px; line-height: 1.5; margin-bottom: 15px; }
+        h1 { font-size: 16px; color: #f1c40f; margin-bottom: 15px; line-height: 1.4; }
+        p { font-size: 10px; line-height: 1.6; margin-bottom: 15px; color: #ddd; }
         
         input {
-            padding: 10px;
+            padding: 12px;
             font-family: 'Press Start 2P';
-            font-size: 12px;
-            margin-bottom: 10px;
-            width: 200px;
+            font-size: 10px;
+            margin-bottom: 15px;
+            width: 100%;
             text-transform: uppercase;
+            border: 2px solid white;
+            background: #333;
+            color: white;
         }
 
         button {
-            padding: 12px 20px;
+            padding: 15px 10px;
             font-family: 'Press Start 2P';
-            font-size: 12px;
+            font-size: 10px;
             background: #e74c3c;
             color: white;
             border: none;
             cursor: pointer;
-            margin: 5px;
+            margin: 5px 0;
+            width: 100%;
             box-shadow: 0 4px #c0392b;
+            border-radius: 4px;
         }
         button:active { transform: translateY(4px); box-shadow: none; }
         button.secondary { background: #3498db; box-shadow: 0 4px #2980b9; }
@@ -91,139 +107,160 @@
             display: flex;
             justify-content: space-between;
             pointer-events: none;
-            text-shadow: 2px 2px #000;
+            text-shadow: 1px 1px #000;
+            z-index: 10;
         }
-        .bar-container { width: 150px; height: 20px; background: #333; border: 2px solid white; margin-top: 5px;}
+        .hud-box { width: 45%; }
+        .bar-container { width: 100%; height: 12px; background: #333; border: 2px solid white; margin-top: 5px;}
         .stamina-bar { height: 100%; background: #2ecc71; width: 100%; transition: width 0.1s; }
-        .progress-text { font-size: 10px; }
+        .progress-text { font-size: 8px; margin-top: 5px; }
+        .player-name { font-size: 8px; }
 
-        /* Notifikasi Invite */
-        #invite-modal { z-index: 100; }
+        /* Kontrol Sentuh untuk HP */
+        #touch-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: none; /* Disembunyikan default, muncul via JS jika HP */
+            justify-content: space-between;
+            padding: 0 20px;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .touch-btn {
+            pointer-events: auto;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+            user-select: none;
+        }
+        .touch-btn:active { background: rgba(255, 255, 255, 0.6); }
+
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <canvas id="gameCanvas" width="800" height="450"></canvas>
+    <!-- Resolusi internal canvas diperbesar agar tidak buram -->
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
 
-    <!-- HUD (Heads Up Display) -->
+    <!-- HUD -->
     <div id="hud" class="hidden">
-        <div>
-            <div style="color:#3498db">PLAYER 1 (YOU)</div>
+        <div class="hud-box">
+            <div class="player-name" style="color:#3498db">KAMU</div>
             <div class="bar-container"><div id="p1-stamina" class="stamina-bar"></div></div>
             <div id="p1-dist" class="progress-text">0m / 1000m</div>
         </div>
-        <div style="text-align: right;">
-            <div style="color:#e74c3c">PLAYER 2 (RIVAL)</div>
+        <div class="hud-box" style="text-align: right;">
+            <div class="player-name" style="color:#e74c3c">LAWAN</div>
             <div class="bar-container"><div id="p2-stamina" class="stamina-bar" style="background:#e74c3c"></div></div>
             <div id="p2-dist" class="progress-text">0m / 1000m</div>
         </div>
     </div>
 
+    <!-- Kontrol Sentuh (Muncul di HP) -->
+    <div id="touch-controls">
+        <div class="touch-btn" id="btn-left">⬅️</div>
+        <div class="touch-btn" id="btn-right">➡️</div>
+    </div>
+
     <!-- MENU UTAMA -->
     <div id="menu-screen" class="ui-layer interactive">
         <h1>🏰 PIXEL KINGDOM RUN 🏰</h1>
-        <p>Lomba lari multiplayer P2P.<br>Gunakan Arrow Keys (Kiri/Kanan) bergantian untuk lari.</p>
+        <p>Lomba lari 1KM Multiplayer.<br>Ganti-ganti tombol Kiri & Kanan untuk lari!</p>
         
-        <div id="connection-status">Menghubungkan ke server peer...</div>
+        <div id="connection-status" style="font-size: 8px; margin-bottom: 10px;">Menghubungkan...</div>
         
         <div id="lobby-controls" class="hidden">
-            <p>ID Kamu: <span id="my-id" style="color:#f1c40f">...</span></p>
+            <p style="font-size: 8px;">ID KAMU:<br><span id="my-id" style="color:#f1c40f; word-break: break-all;">...</span></p>
             <input type="text" id="friend-id" placeholder="MASUKKAN ID TEMAN">
-            <br>
-            <button onclick="joinGame()">GABUNG PERTANDINGAN</button>
-            <p style="font-size: 10px; color: #aaa;">Atau bagikan ID kamu ke teman untuk di-invite</p>
+            <button onclick="joinGame()">GABUNG / INVITE</button>
         </div>
     </div>
 
     <!-- MODAL TERIMA INVITE -->
     <div id="invite-modal" class="ui-layer interactive hidden">
-        <h1 style="color: #e74c3c">⚔️ TANTANGAN DITERIMA!</h1>
-        <p>Seseorang menantangmu lari!</p>
-        <p>Dari ID: <span id="challenger-id"></span></p>
-        <button onclick="acceptChallenge()">TERIMA TANTANGAN</button>
+        <h1 style="color: #e74c3c; font-size: 14px;">⚔️ TANTANGAN MASUK!</h1>
+        <p style="font-size: 8px;">Dari: <span id="challenger-id" style="word-break: break-all;"></span></p>
+        <button onclick="acceptChallenge()">TERIMA</button>
         <button class="secondary" onclick="rejectChallenge()">TOLAK</button>
     </div>
 
     <!-- COUNTDOWN -->
     <div id="countdown-screen" class="ui-layer hidden">
-        <h1 id="countdown-text" style="font-size: 60px;">3</h1>
+        <h1 id="countdown-text" style="font-size: 40px;">3</h1>
     </div>
 
     <!-- GAME OVER -->
     <div id="result-screen" class="ui-layer interactive hidden">
-        <h1 id="winner-text">MENANG!</h1>
+        <h1 id="winner-text" style="font-size: 18px;">MENANG!</h1>
         <button onclick="location.reload()">MAIN LAGI</button>
     </div>
 </div>
 
 <script>
 /**
- * KONFIGURASI GAME & VARIABEL GLOBAL
+ * KONFIGURASI GAME
  */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const FINISH_LINE = 2000; // Jarak finish dalam satuan pixel logic
 
-// State Game
-let gameState = 'MENU'; // MENU, WAITING, COUNTDOWN, PLAYING, END
-let isHost = false;
-let myPeerId = null;
+// 1 KM = 1000 Meter. Kita set 1 meter = 2 unit pixel logic. Jadi 2000 unit.
+const FINISH_LINE = 2000; 
+
+let gameState = 'MENU'; 
 let conn = null;
-let pendingConn = null; // Untuk menyimpan koneksi yang masuk sebelum diterima
+let pendingConn = null;
 
 // Data Pemain
 const player1 = { x: 100, y: 300, color: '#3498db', stamina: 100, distance: 0, frame: 0, speed: 0, lastKey: null };
 const player2 = { x: 100, y: 330, color: '#e74c3c', stamina: 100, distance: 0, frame: 0, speed: 0, lastKey: null };
 
-// Aset Pixel Art (Digambar via code agar ringan)
-const sprites = {
-    castle: null,
-    tree: null,
-    grass: null
-};
+// Deteksi apakah pengguna menggunakan perangkat sentuh (HP/Tablet)
+const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+if (isTouchDevice) {
+    document.getElementById('touch-controls').style.display = 'flex';
+}
 
 /**
- * SETUP PEERJS (NETWORKING)
+ * SETUP PEERJS
  */
-const peer = new Peer(null, {
-    debug: 2
-});
+const peer = new Peer(null, { debug: 1 });
 
 peer.on('open', (id) => {
-    myPeerId = id;
     document.getElementById('my-id').innerText = id;
-    document.getElementById('connection-status').innerText = "Siap! Bagikan ID-mu.";
+    document.getElementById('connection-status').innerText = "Siap! Salin ID-mu.";
     document.getElementById('lobby-controls').classList.remove('hidden');
 });
 
 peer.on('connection', (connection) => {
     if (gameState !== 'MENU') {
-        connection.close(); // Tolak jika sudah main
+        connection.close(); 
         return;
     }
-    
-    // Jika kita tamu, kita langsung connect. Jika host, kita tunggu approval UI
-    // Logika sederhana: Siapa yang klik "Gabung" duluan yang inisiasi data
-    
     pendingConn = connection;
-    
-    // Tampilkan UI Terima/Tolak
     document.getElementById('invite-modal').classList.remove('hidden');
     document.getElementById('challenger-id').innerText = connection.peer;
 });
 
 function joinGame() {
     const friendId = document.getElementById('friend-id').value.trim();
-    if (!friendId) return alert("Masukkan ID teman!");
+    if (!friendId) return alert("Masukkan ID teman dulu!");
     
     conn = peer.connect(friendId);
     setupConnection(conn);
     
-    // Tunggu sebentar, jika tidak tersambung
     setTimeout(() => {
-        if(gameState === 'MENU') {
-            alert("Gagal terhubung atau teman menolak.");
+        if(gameState === 'MENU' && (!conn || !conn.open)) {
+            alert("Gagal terhubung. Pastikan ID benar.");
         }
     }, 5000);
 }
@@ -241,7 +278,6 @@ function rejectChallenge() {
 
 function setupConnection(connection) {
     connection.on('open', () => {
-        console.log("Terhubung!");
         startCountdown();
     });
 
@@ -250,26 +286,26 @@ function setupConnection(connection) {
     });
     
     connection.on('close', () => {
-        alert("Lawan terputus!");
-        location.reload();
+        if(gameState !== 'END') {
+            alert("Lawan terputus!");
+            location.reload();
+        }
     });
 }
 
 function handleNetworkData(data) {
     if (data.type === 'UPDATE') {
-        // Update posisi lawan (Player 2 bagi kita adalah Player 1 bagi mereka)
         player2.distance = data.distance;
         player2.stamina = data.stamina;
         player2.frame = data.frame;
         player2.speed = data.speed;
-        
         checkWinCondition();
     } else if (data.type === 'START') {
         gameState = 'PLAYING';
         document.getElementById('countdown-screen').classList.add('hidden');
         document.getElementById('hud').classList.remove('hidden');
     } else if (data.type === 'FINISH') {
-        endGame(false); // Kita kalah
+        endGame(false); 
     }
 }
 
@@ -286,8 +322,43 @@ function sendData() {
 }
 
 /**
- * LOGIKA GAME
+ * LOGIKA INPUT (KEYBOARD & TOUCH)
  */
+function handleInput(key) {
+    if (gameState !== 'PLAYING') return;
+
+    if (key === 'Left' || key === 'Right') {
+        const requiredKey = player1.lastKey === 'Left' ? 'Right' : 'Left';
+        
+        if (key === requiredKey || player1.lastKey === null) {
+            if (player1.stamina > 10) {
+                player1.speed += 1.8; // Sedikit dipercepat biar seru
+                player1.stamina -= 6; 
+                player1.frame++; 
+                player1.lastKey = key;
+            } else {
+                player1.speed *= 0.5; 
+            }
+        } else {
+            player1.speed *= 0.8;
+        }
+    }
+}
+
+// Keyboard Events
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') handleInput('Left');
+    if (e.key === 'ArrowRight') handleInput('Right');
+});
+
+// Touch Events (Untuk HP)
+document.getElementById('btn-left').addEventListener('touchstart', (e) => { e.preventDefault(); handleInput('Left'); });
+document.getElementById('btn-right').addEventListener('touchstart', (e) => { e.preventDefault(); handleInput('Right'); });
+// Fallback untuk klik mouse di tombol touch
+document.getElementById('btn-left').addEventListener('mousedown', (e) => { e.preventDefault(); handleInput('Left'); });
+document.getElementById('btn-right').addEventListener('mousedown', (e) => { e.preventDefault(); handleInput('Right'); });
+
+
 function startCountdown() {
     gameState = 'COUNTDOWN';
     document.getElementById('menu-screen').classList.add('hidden');
@@ -300,7 +371,6 @@ function startCountdown() {
             clearInterval(timer);
             document.getElementById('countdown-text').innerText = "LARI!";
             
-            // Sinkronisasi start
             if(conn && conn.open) conn.send({ type: 'START' });
             
             setTimeout(() => {
@@ -313,57 +383,25 @@ function startCountdown() {
     }, 1000);
 }
 
-// Input Handling
-window.addEventListener('keydown', (e) => {
-    if (gameState !== 'PLAYING') return;
-
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-        // Mekanik Lari: Harus ganti-ganti tombol
-        const requiredKey = player1.lastKey === 'ArrowLeft' ? 'ArrowRight' : 'ArrowLeft';
-        
-        if (e.key === requiredKey || player1.lastKey === null) {
-            // Input Benar
-            if (player1.stamina > 10) {
-                player1.speed += 1.5; // Boost kecepatan
-                player1.stamina -= 5; // Kurangi stamina
-                player1.frame++; // Animasi jalan
-                player1.lastKey = e.key;
-            } else {
-                // Stamina habis, penalty
-                player1.speed *= 0.5; 
-            }
-        } else {
-            // Input Salah (spam tombol sama), penalty kecil
-            player1.speed *= 0.9;
-        }
-    }
-});
-
 function updatePhysics() {
     if (gameState !== 'PLAYING') return;
 
-    // Player 1 Logic
-    // Gesekan udara/tanah (melambat perlahan)
-    player1.speed *= 0.96; 
-    // Regenerasi stamina saat pelan
-    if (player1.speed < 2 && player1.stamina < 100) player1.stamina += 0.5;
+    player1.speed *= 0.95; 
+    if (player1.speed < 2 && player1.stamina < 100) player1.stamina += 0.6;
     
     player1.distance += player1.speed;
-
-    // Kirim data ke lawan
     sendData();
     
-    // Cek Menang
     if (player1.distance >= FINISH_LINE) {
         if(conn && conn.open) conn.send({ type: 'FINISH' });
         endGame(true);
     }
 
-    // Update UI Bars
-    document.getElementById('p1-stamina').style.width = player1.stamina + '%';
-    document.getElementById('p1-dist').innerText = Math.floor(player1.distance/2) + 'm';
-    document.getElementById('p2-stamina').style.width = player2.stamina + '%';
-    document.getElementById('p2-dist').innerText = Math.floor(player2.distance/2) + 'm';
+    // Update UI (Dibagi 2 agar tampilannya dalam Meter asli 0-1000m)
+    document.getElementById('p1-stamina').style.width = Math.max(0, player1.stamina) + '%';
+    document.getElementById('p1-dist').innerText = Math.floor(player1.distance/2) + 'm / 1000m';
+    document.getElementById('p2-stamina').style.width = Math.max(0, player2.stamina) + '%';
+    document.getElementById('p2-dist').innerText = Math.floor(player2.distance/2) + 'm / 1000m';
 }
 
 function checkWinCondition() {
@@ -386,35 +424,30 @@ function endGame(iWon) {
 }
 
 /**
- * RENDERING (GRAFIK PIXEL)
+ * RENDERING GRAFIK
  */
 function drawPixelChar(x, y, color, frame) {
     ctx.fillStyle = color;
-    // Badan
-    ctx.fillRect(x, y - 20, 12, 20);
-    // Kepala
-    ctx.fillStyle = '#ffccaa'; // Kulit
-    ctx.fillRect(x + 2, y - 28, 8, 8);
+    ctx.fillRect(x, y - 20, 12, 20); // Badan
+    ctx.fillStyle = '#ffccaa'; 
+    ctx.fillRect(x + 2, y - 28, 8, 8); // Kepala
     
-    // Kaki (Animasi sederhana berdasarkan frame)
     ctx.fillStyle = '#333';
     if (frame % 2 === 0) {
-        ctx.fillRect(x + 2, y, 4, 8); // Kaki kiri
+        ctx.fillRect(x + 2, y, 4, 8); 
     } else {
-        ctx.fillRect(x + 6, y, 4, 8); // Kaki kanan
+        ctx.fillRect(x + 6, y, 4, 8); 
     }
 }
 
 function drawBackground(offset) {
-    // Langit
     ctx.fillStyle = '#87CEEB';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Matahari
     ctx.fillStyle = '#FDB813';
-    ctx.fillRect(700, 50, 40, 40);
+    ctx.fillRect(700, 40, 40, 40); // Matahari
 
-    // Gunung (Parallax lambat)
+    // Gunung
     ctx.fillStyle = '#5D6D7E';
     const mtnOffset = (offset * 0.1) % 800;
     for(let i=0; i<3; i++) {
@@ -426,20 +459,18 @@ function drawBackground(offset) {
         ctx.fill();
     }
 
-    // Kastil Kerajaan (Background tengah)
+    // Kastil
     ctx.fillStyle = '#95a5a6';
     const castleOffset = (offset * 0.3) % 1000;
-    ctx.fillRect(200 - castleOffset, 200, 100, 150); // Menara
-    ctx.fillRect(220 - castleOffset, 180, 60, 20); // Atap
-    // Bendera
+    ctx.fillRect(200 - castleOffset, 200, 100, 150); 
+    ctx.fillRect(220 - castleOffset, 180, 60, 20); 
     ctx.fillStyle = '#e74c3c';
     ctx.fillRect(245 - castleOffset, 150, 30, 20);
 
-    // Tanah & Rumput (Foreground cepat)
-    ctx.fillStyle = '#27ae60'; // Rumput
+    // Tanah
+    ctx.fillStyle = '#27ae60'; 
     ctx.fillRect(0, 350, canvas.width, 100);
     
-    // Detail tanah (pixel grid effect)
     ctx.fillStyle = '#2ecc71';
     const groundOffset = offset % 40;
     for(let i=0; i<25; i++) {
@@ -447,36 +478,32 @@ function drawBackground(offset) {
         ctx.fillRect((i*40) - groundOffset + 20, 390, 20, 10);
     }
     
-    // Pohon Pedesaan
+    // Pohon
     const treeOffset = (offset * 1.2) % 600;
-    ctx.fillStyle = '#8B4513'; // Batang
+    ctx.fillStyle = '#8B4513'; 
     ctx.fillRect(500 - treeOffset, 310, 20, 40);
-    ctx.fillStyle = '#228B22'; // Daun
+    ctx.fillStyle = '#228B22'; 
     ctx.fillRect(480 - treeOffset, 270, 60, 40);
 }
 
 function gameLoop() {
-    // Clear
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Hitung offset kamera berdasarkan pemain terdepan (atau rata-rata)
-    // Agar kamera mengikuti aksi
     const camX = Math.max(player1.distance, player2.distance) - 100;
-    
     drawBackground(camX);
 
-    // Gambar Finish Line
-    const finishScreenX = FINISH_LINE - camX + 100; // +100 karena start player di x=100
+    // Garis Finish (1000m)
+    const finishScreenX = FINISH_LINE - camX + 100; 
     if (finishScreenX < 800) {
-        ctx.fillStyle = '#FFF';
         for(let i=0; i<10; i++) {
-            ctx.fillRect(finishScreenX, 250 + (i*20), 20, 20);
-            ctx.fillStyle = ctx.fillStyle === '#FFF' ? '#000' : '#FFF';
+            ctx.fillStyle = (i % 2 === 0) ? '#FFF' : '#000';
+            ctx.fillRect(finishScreenX, 250 + (i*15), 20, 15);
         }
+        ctx.fillStyle = '#FFF';
+        ctx.font = '10px "Press Start 2P"';
+        ctx.fillText("1000M", finishScreenX - 10, 240);
     }
 
-    // Gambar Pemain
-    // Posisi layar = Posisi dunia - Kamera + Offset Awal
     const p1ScreenX = player1.distance - camX + 100;
     const p2ScreenX = player2.distance - camX + 100;
 
@@ -487,9 +514,7 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// Mulai Loop Render
 gameLoop();
-
 </script>
 </body>
 </html>
