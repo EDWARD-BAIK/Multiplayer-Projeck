@@ -130,7 +130,6 @@
   .ring::before{content:''; position:absolute; inset:-6px; border-radius:50%; border:2px solid rgba(255,62,200,.25); animation:ringPulse 1.6s ease-out infinite;}
   @keyframes ringPulse{0%{transform:scale(.9); opacity:1;}100%{transform:scale(1.5); opacity:0;}}
 
-  
   .promo-grid{display:flex; gap:10px; justify-content:center; margin-top:6px;}
   .promo-opt{width:56px; height:56px; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid var(--glass-border);
     display:flex; align-items:center; justify-content:center; font-size:30px; cursor:pointer; transition:.15s;}
@@ -307,7 +306,6 @@
 (function(){
   "use strict";
 
-  
   function loadScript(src){
     return new Promise(function(resolve, reject){
       var s = document.createElement('script');
@@ -396,7 +394,6 @@
       };
     }
 
-    
     function attackSquares(state, from){
       var board = state.board;
       var piece = board[from];
@@ -601,7 +598,6 @@
       for(var i=0;i<pseudo.length;i++){ if(pseudo[i].to === to){ meta = pseudo[i]; break; } }
       if(!meta) return null;
       var captured = applyMoveRaw(state, from, to, meta, promoChoice);
-      var mover = to === state.kingPos.w || to === state.kingPos.b ? null : null;
       var justMovedColor = state.turn === 'w' ? 'b' : 'w';
       var oppColor = state.turn;
       var inCheck = isInCheck(state, oppColor);
@@ -632,14 +628,14 @@
   var conn = null;
   var pendingConn = null;
   var myId = null;
-  var myRole = null; // 'w' or 'b'
+  var myRole = null; 
   var oppLabel = 'LAWAN';
   var state = null;
   var selected = null;
   var selLegal = [];
   var gameOver = false;
   var lastMove = null;
-  var pendingPromo = null; // {from,to}
+  var pendingPromo = null; 
   var capturedByMe = [];
   var capturedByOpp = [];
 
@@ -715,7 +711,6 @@
     lobbyStatusDot.className = 'status-dot' + (kind ? (' ' + kind) : '');
   }
 
-  
   var openTimeoutHandle = null;
   var idRetries = 0;
 
@@ -729,7 +724,11 @@
     retryBtn.classList.remove('show');
     setLobbyStatus('Menunggu koneksi…', 'pulse');
 
+    
     peer = new Peer(id, {
+      host: '0.peerjs.com', 
+      port: 443,            
+      secure: true,         
       debug: 0,
       config: {
         iceServers: [
@@ -802,7 +801,6 @@
     });
   }
 
-  
   inviteBtn.addEventListener('click', sendInvite);
   opponentInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') sendInvite(); });
   opponentInput.addEventListener('input', function(){
@@ -819,7 +817,8 @@
     inviteBtn.disabled = true;
     setLobbyStatus('Menghubungi ' + target + '…', 'pulse');
 
-    var c = peer.connect(target, { reliable: true });
+    
+    var c = peer.connect(target);
     var settled = false;
 
     var timeoutH = setTimeout(function(){
