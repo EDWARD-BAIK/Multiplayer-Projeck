@@ -382,9 +382,7 @@
 
   boot();
 
-  /* ============================================================
-     CHESS ENGINE CORE (rules, move generation, check detection)
-     ============================================================ */
+  
   var Chess = (function(){
     var ROOK_DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
     var BISHOP_DIRS = [[-1,-1],[-1,1],[1,-1],[1,1]];
@@ -704,9 +702,7 @@
   var chatInput = document.getElementById('chatInput');
   var chatSendBtn = document.getElementById('chatSendBtn');
 
-  /* ============================================================
-     GENERATIVE AMBIENT MUSIC (Web Audio API — no external files)
-     ============================================================ */
+  
   var musicToggleBtn = document.getElementById('musicToggleBtn');
   var audioCtx = null;
   var musicMasterGain = null;
@@ -714,7 +710,7 @@
   var musicTimer = null;
   var chordIndex = 0;
 
-  // Slow, warm royal-hall chord progression (Am - F - C - G), low/mid register
+  
   var CHORD_PROGRESSION = [
     [220.00, 261.63, 329.63, 440.00],  // Am
     [174.61, 220.00, 261.63, 349.23],  // F
@@ -745,7 +741,7 @@
       osc.start(now);
       osc.stop(now + duration + 0.1);
     });
-    // gentle high sparkle note for texture
+    
     if(Math.random() < 0.5){
       var sp = audioCtx.createOscillator();
       var spg = audioCtx.createGain();
@@ -814,7 +810,7 @@
   var disconnectTimer = null;
   var disconnectSecondsLeft = 30;
 
-  // Draw-tracking (50-move rule + threefold repetition)
+  
   var halfmoveClock = 0;
   var positionCounts = {};
 
@@ -1058,7 +1054,7 @@
     return false;
   }
 
-  /* ---- wraps Chess.makeMove with draw-rule bookkeeping ---- */
+  
   function performMove(from, to, promoChoice){
     var movingPiece = state.board[from];
     if(!movingPiece) return null;
@@ -1187,9 +1183,7 @@
     }
   }
 
-  /* ============================================================
-     BOT ENGINE — minimax with alpha-beta pruning + move ordering
-     ============================================================ */
+  
   var PIECE_VALUES = { P:100, N:320, B:330, R:500, Q:900, K:0 };
 
   function evaluateBoard(st){
